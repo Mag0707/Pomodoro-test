@@ -427,3 +427,47 @@ body:not(.dim-mode) .dim-mode-hint {
     transition: none;
   }
 }
+
+
+/* 省画面モードでは、状態・タイマー・メッセージ以外を背景と同化させる */
+body.dim-mode .app-header,
+body.dim-mode .cycle-display,
+body.dim-mode .wake-lock-status,
+body.dim-mode .restore-notice,
+body.dim-mode #running-controls,
+body.dim-mode #paused-controls,
+body.dim-mode #alert-controls,
+body.dim-mode .dim-mode-hint {
+  color: #151918 !important;
+  background: #151918 !important;
+  border-color: #151918 !important;
+  box-shadow: none !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+}
+
+body.dim-mode #running-controls button,
+body.dim-mode #paused-controls button {
+  color: #151918 !important;
+  background: #151918 !important;
+  border-color: #151918 !important;
+  box-shadow: none !important;
+}
+
+body.dim-mode .app-header *,
+body.dim-mode .cycle-display *,
+body.dim-mode .wake-lock-status *,
+body.dim-mode .restore-notice *,
+body.dim-mode .dim-mode-hint * {
+  color: #151918 !important;
+}
+
+body.dim-mode .phase-label,
+body.dim-mode .time-display,
+body.dim-mode .check-message {
+  opacity: 1 !important;
+}
+
+body.dim-mode .timer-card {
+  cursor: pointer;
+}
