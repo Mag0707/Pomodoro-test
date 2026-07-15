@@ -34,6 +34,7 @@
   const focusMinutesInput = document.getElementById("focus-minutes");
   const alertSoundSelect = document.getElementById("alert-sound");
   const focusSoundSelect = document.getElementById("focus-sound");
+  const breakEndAlertCheckbox = document.getElementById("break-end-alert");
 
   const decreaseButton = document.getElementById("decrease-button");
   const increaseButton = document.getElementById("increase-button");
@@ -66,6 +67,7 @@
   let isPaused = false;
   let messageIndex = 0;
   let restoredFromStorage = false;
+  let alertNextPhase = "break";
 
   let audioContext = null;
   let activeAudioNodes = [];
@@ -461,7 +463,8 @@
     const settings = {
       focusMinutes: clampFocusMinutes(focusMinutesInput.value),
       alertSound: alertSoundSelect.value,
-      focusSound: focusSoundSelect.value
+      focusSound: focusSoundSelect.value,
+      breakEndAlert: breakEndAlertCheckbox.checked
     };
 
     localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
@@ -486,6 +489,8 @@
       if ([...focusSoundSelect.options].some(option => option.value === settings.focusSound)) {
         focusSoundSelect.value = settings.focusSound;
       }
+
+      breakEndAlertCheckbox.checked = settings.breakEndAlert !== false;
     } catch (_) {
       localStorage.removeItem(SETTINGS_STORAGE_KEY);
     }
@@ -504,6 +509,7 @@
       endTime,
       isPaused,
       messageIndex,
+      alertNextPhase,
       savedAt: Date.now()
     };
 
@@ -529,12 +535,17 @@
         return false;
       }
 
-      phase = state.phase === "alert" ? "break" : state.phase;
+      alertNextPhase = state.alertNextPhase === "focus" ? "focus" : "break";
+      phase = state.phase === "alert" ? alertNextPhase : state.phase;
       cycle = Number.isInteger(state.cycle) && state.cycle > 0 ? state.cycle : 1;
       focusSeconds = Number.isFinite(state.focusSeconds) && state.focusSeconds > 0
         ? state.focusSeconds
         : clampFocusMinutes(focusMinutesInput.value) * 60;
       messageIndex = Number.isInteger(state.messageIndex) ? state.messageIndex : 0;
+
+      if (state.phase === "alert" && alertNextPhase === "focus") {
+        cycle += 1;
+      }
 
       let restoredRemaining = Number.isFinite(state.remainingSeconds)
         ? Math.max(0, Math.ceil(state.remainingSeconds))
@@ -579,9 +590,16 @@
 
   function updateDisplay() {
     if (phase === "alert") {
-      phaseLabel.textContent = "集中時間終了";
+      const movingToBreak = alertNextPhase === "break";
+
+      phaseLabel.textContent = movingToBreak ? "集中時間終了" : "休憩時間終了";
       timeDisplay.textContent = "00:00";
-      checkMessage.textContent = "音が止まったら、5分休憩を始めます。";
+      checkMessage.textContent = movingToBreak
+        ? "音が止まったら、5分休憩を始めます。"
+        : "音が止まったら、次の集中時間を始めます。";
+      alertControls.textContent = movingToBreak
+        ? "まもなく休憩を開始します"
+        : "まもなく集中時間を開始します";
       cycleDisplay.textContent = `${cycle}セット目`;
       return;
     }
@@ -693,7 +711,12 @@
     messageIndex += 1;
 
     if (phase === "focus") {
-      beginAlert();
+      beginAlert("break");
+      return;
+    }
+
+    if (breakEndAlertCheckbox.checked) {
+      beginAlert("focus");
       return;
     }
 
@@ -702,8 +725,9 @@
     beginCountdown(focusSeconds);
   }
 
-  function beginAlert() {
+  function beginAlert(nextPhase) {
     stopAllAudio();
+    alertNextPhase = nextPhase;
     phase = "alert";
     remainingSeconds = 0;
     endTime = null;
@@ -719,8 +743,16 @@
     alertTimeoutId = window.setTimeout(() => {
       stopAllAudio();
       alertTimeoutId = null;
-      phase = "break";
-      beginCountdown(BREAK_SECONDS);
+
+      if (alertNextPhase === "break") {
+        phase = "break";
+        beginCountdown(BREAK_SECONDS);
+        return;
+      }
+
+      phase = "focus";
+      cycle += 1;
+      beginCountdown(focusSeconds);
     }, ALERT_DURATION_MS);
   }
 
@@ -737,6 +769,7 @@
     phase = "focus";
     cycle = 1;
     messageIndex = 0;
+    alertNextPhase = "break";
     restoredFromStorage = false;
     restoreNotice.classList.add("hidden");
 
@@ -783,6 +816,7 @@
     isPaused = false;
     endTime = null;
     messageIndex = 0;
+    alertNextPhase = "break";
     restoredFromStorage = false;
 
     const focusMinutes = clampFocusMinutes(focusMinutesInput.value);
@@ -819,6 +853,7 @@
 
   alertSoundSelect.addEventListener("change", saveSettings);
   focusSoundSelect.addEventListener("change", saveSettings);
+  breakEndAlertCheckbox.addEventListener("change", saveSettings);
 
   timerCard.addEventListener("click", event => {
     if (event.target.closest("button")) {

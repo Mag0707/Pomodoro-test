@@ -54,7 +54,16 @@
             </select>
             <button id="preview-alert-button" class="preview-button" type="button">試聴</button>
           </div>
-          <p class="help-text compact">集中終了時に約2秒だけ鳴ります。</p>
+          <p class="help-text">集中終了時に約2秒だけ鳴ります。</p>
+
+          <label class="toggle-row" for="break-end-alert">
+            <span class="toggle-text">
+              <strong>休憩終了時にも同じ音を鳴らす</strong>
+              <small>約2秒鳴った後、次の集中時間を始めます。</small>
+            </span>
+            <input id="break-end-alert" type="checkbox" checked>
+            <span class="toggle-switch" aria-hidden="true"></span>
+          </label>
         </div>
 
         <div class="setting-group">
@@ -98,7 +107,7 @@
         </div>
 
         <div id="alert-controls" class="alert-note hidden" role="status">
-          まもなく休憩を開始します
+          次の時間をまもなく開始します
         </div>
 
         <p id="dim-mode-hint" class="dim-mode-hint hidden">
