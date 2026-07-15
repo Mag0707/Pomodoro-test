@@ -171,35 +171,45 @@
     return buffer;
   }
 
-  function playWhiteNoise(volume = 0.025) {
+  function playSoftBreeze() {
     const context = getAudioContext();
     const source = registerAudioNode(context.createBufferSource());
+    const lowpass = registerAudioNode(context.createBiquadFilter());
     const gain = registerAudioNode(context.createGain());
 
-    source.buffer = createNoiseBuffer(2);
+    source.buffer = createNoiseBuffer(4);
     source.loop = true;
-    gain.gain.value = volume;
 
-    source.connect(gain);
+    lowpass.type = "lowpass";
+    lowpass.frequency.value = 650;
+    lowpass.Q.value = 0.4;
+    gain.gain.value = 0.012;
+
+    source.connect(lowpass);
+    lowpass.connect(gain);
     gain.connect(context.destination);
     source.start();
   }
 
-  function playRainNoise() {
+  function playGentleRain() {
     const context = getAudioContext();
     const source = registerAudioNode(context.createBufferSource());
     const highpass = registerAudioNode(context.createBiquadFilter());
     const lowpass = registerAudioNode(context.createBiquadFilter());
     const gain = registerAudioNode(context.createGain());
 
-    source.buffer = createNoiseBuffer(2);
+    source.buffer = createNoiseBuffer(4);
     source.loop = true;
 
     highpass.type = "highpass";
-    highpass.frequency.value = 500;
+    highpass.frequency.value = 180;
+    highpass.Q.value = 0.3;
+
     lowpass.type = "lowpass";
-    lowpass.frequency.value = 5200;
-    gain.gain.value = 0.035;
+    lowpass.frequency.value = 1500;
+    lowpass.Q.value = 0.5;
+
+    gain.gain.value = 0.014;
 
     source.connect(highpass);
     highpass.connect(lowpass);
@@ -230,13 +240,13 @@
       return;
     }
 
-    if (type === "white-noise") {
-      playWhiteNoise();
+    if (type === "soft-breeze") {
+      playSoftBreeze();
       return;
     }
 
-    if (type === "rain") {
-      playRainNoise();
+    if (type === "gentle-rain") {
+      playGentleRain();
     }
   }
 
