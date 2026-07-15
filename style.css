@@ -16,16 +16,17 @@
 body {
   margin: 0;
   min-height: 100svh;
-  background:
-    linear-gradient(180deg, #ffffff 0%, #f5f7f8 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #f5f7f8 100%);
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
 }
 
-button {
+button,
+select {
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -107,10 +108,10 @@ h2 {
   background: #f8fafb;
   color: #33404c;
   font-size: 2rem;
-  font-weight: 400;
 }
 
-.step-button:active {
+.step-button:active,
+.preview-button:active {
   transform: scale(0.98);
   background: #eef3f5;
 }
@@ -145,7 +146,6 @@ h2 {
 }
 
 .minute-display span {
-  font-size: 1rem;
   color: #62707d;
 }
 
@@ -154,6 +154,39 @@ h2 {
   color: #718096;
   font-size: 0.9rem;
   line-height: 1.5;
+}
+
+.help-text.compact {
+  margin-bottom: 0;
+}
+
+.setting-group {
+  margin-bottom: 26px;
+}
+
+.sound-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 86px;
+  gap: 10px;
+}
+
+select {
+  width: 100%;
+  min-height: 52px;
+  padding: 0 42px 0 14px;
+  border: 1px solid #d9e0e4;
+  border-radius: 15px;
+  background: #ffffff;
+  color: #1f2933;
+}
+
+.preview-button {
+  min-height: 52px;
+  border: 1px solid #d9e0e4;
+  border-radius: 15px;
+  background: #f8fafb;
+  color: #33404c;
+  font-weight: 700;
 }
 
 .primary-button,
@@ -225,11 +258,21 @@ h2 {
   gap: 12px;
 }
 
+.alert-note {
+  min-height: 58px;
+  display: grid;
+  place-items: center;
+  border-radius: 18px;
+  background: #eef7f5;
+  color: #2f6f68;
+  font-weight: 700;
+}
+
 .hidden {
   display: none !important;
 }
 
-@media (max-height: 700px) {
+@media (max-height: 760px) {
   .app-shell {
     justify-content: flex-start;
   }
