@@ -7,6 +7,9 @@
   const MIN_FOCUS_MINUTES = 1;
   const MAX_FOCUS_MINUTES = 120;
 
+  const SETTINGS_STORAGE_KEY = "tension-check-timer-settings-v1";
+  const TIMER_STORAGE_KEY = "tension-check-timer-state-v1";
+
   const focusMessages = [
     "肩と顎の力を確認しましょう。",
     "息を止めていませんか？",
@@ -37,6 +40,7 @@
   const timeDisplay = document.getElementById("time-display");
   const checkMessage = document.getElementById("check-message");
   const cycleDisplay = document.getElementById("cycle-display");
+  const restoreNotice = document.getElementById("restore-notice");
 
   const runningControls = document.getElementById("running-controls");
   const pausedControls = document.getElementById("paused-controls");
@@ -55,6 +59,7 @@
   let cycle = 1;
   let isPaused = false;
   let messageIndex = 0;
+  let restoredFromStorage = false;
 
   let audioContext = null;
   let activeAudioNodes = [];
@@ -101,14 +106,6 @@
     }
 
     activeAudioNodes = [];
-  }
-
-  function createGain(value) {
-    const context = getAudioContext();
-    const gain = registerAudioNode(context.createGain());
-    gain.gain.value = value;
-    gain.connect(context.destination);
-    return gain;
   }
 
   function playTone(frequency, durationSeconds, options = {}) {
@@ -299,6 +296,122 @@
     return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
   }
 
+  function saveSettings() {
+    const settings = {
+      focusMinutes: clampFocusMinutes(focusMinutesInput.value),
+      alertSound: alertSoundSelect.value,
+      focusSound: focusSoundSelect.value
+    };
+
+    localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
+  }
+
+  function loadSettings() {
+    try {
+      const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
+
+      if (!stored) {
+        return;
+      }
+
+      const settings = JSON.parse(stored);
+
+      setFocusMinutes(settings.focusMinutes ?? 25);
+
+      if ([...alertSoundSelect.options].some(option => option.value === settings.alertSound)) {
+        alertSoundSelect.value = settings.alertSound;
+      }
+
+      if ([...focusSoundSelect.options].some(option => option.value === settings.focusSound)) {
+        focusSoundSelect.value = settings.focusSound;
+      }
+    } catch (_) {
+      localStorage.removeItem(SETTINGS_STORAGE_KEY);
+    }
+  }
+
+  function saveTimerState() {
+    if (setupScreen.classList.contains("hidden") === false) {
+      return;
+    }
+
+    const state = {
+      phase,
+      cycle,
+      focusSeconds,
+      remainingSeconds: phase === "alert" ? 0 : calculateRemainingSeconds(),
+      endTime,
+      isPaused,
+      messageIndex,
+      savedAt: Date.now()
+    };
+
+    localStorage.setItem(TIMER_STORAGE_KEY, JSON.stringify(state));
+  }
+
+  function clearTimerState() {
+    localStorage.removeItem(TIMER_STORAGE_KEY);
+  }
+
+  function loadTimerState() {
+    try {
+      const stored = localStorage.getItem(TIMER_STORAGE_KEY);
+
+      if (!stored) {
+        return false;
+      }
+
+      const state = JSON.parse(stored);
+
+      if (!["focus", "break", "alert"].includes(state.phase)) {
+        clearTimerState();
+        return false;
+      }
+
+      phase = state.phase === "alert" ? "break" : state.phase;
+      cycle = Number.isInteger(state.cycle) && state.cycle > 0 ? state.cycle : 1;
+      focusSeconds = Number.isFinite(state.focusSeconds) && state.focusSeconds > 0
+        ? state.focusSeconds
+        : clampFocusMinutes(focusMinutesInput.value) * 60;
+      messageIndex = Number.isInteger(state.messageIndex) ? state.messageIndex : 0;
+
+      let restoredRemaining = Number.isFinite(state.remainingSeconds)
+        ? Math.max(0, Math.ceil(state.remainingSeconds))
+        : focusSeconds;
+
+      if (!state.isPaused && Number.isFinite(state.endTime)) {
+        restoredRemaining = Math.max(0, Math.ceil((state.endTime - Date.now()) / 1000));
+      }
+
+      if (restoredRemaining <= 0) {
+        if (phase === "focus") {
+          phase = "break";
+          restoredRemaining = BREAK_SECONDS;
+        } else {
+          phase = "focus";
+          cycle += 1;
+          restoredRemaining = focusSeconds;
+        }
+      }
+
+      remainingSeconds = restoredRemaining;
+      endTime = null;
+      isPaused = true;
+      restoredFromStorage = true;
+
+      showTimerScreen();
+      showPausedControls();
+      restoreNotice.classList.remove("hidden");
+      updateDisplay();
+      saveTimerState();
+
+      return true;
+    } catch (_) {
+      clearTimerState();
+      return false;
+    }
+  }
+
   function updateDisplay() {
     if (phase === "alert") {
       phaseLabel.textContent = "集中時間終了";
@@ -377,6 +490,8 @@
     remainingSeconds = seconds;
     endTime = Date.now() + remainingSeconds * 1000;
     isPaused = false;
+    restoredFromStorage = false;
+    restoreNotice.classList.add("hidden");
 
     showRunningControls();
 
@@ -387,6 +502,7 @@
     }
 
     updateDisplay();
+    saveTimerState();
     intervalId = window.setInterval(tick, 250);
   }
 
@@ -396,7 +512,10 @@
 
     if (remainingSeconds <= 0) {
       moveToNextPhase();
+      return;
     }
+
+    saveTimerState();
   }
 
   function moveToNextPhase() {
@@ -422,6 +541,7 @@
 
     showAlertControls();
     updateDisplay();
+    saveTimerState();
     playAlertSound(alertSoundSelect.value);
 
     alertTimeoutId = window.setTimeout(() => {
@@ -435,6 +555,7 @@
   function startTimer() {
     stopPreviewTimer();
     stopAllAudio();
+    saveSettings();
 
     const focusMinutes = clampFocusMinutes(focusMinutesInput.value);
     setFocusMinutes(focusMinutes);
@@ -444,6 +565,8 @@
     phase = "focus";
     cycle = 1;
     messageIndex = 0;
+    restoredFromStorage = false;
+    restoreNotice.classList.add("hidden");
 
     showTimerScreen();
     beginCountdown(focusSeconds);
@@ -462,6 +585,7 @@
     stopAllAudio();
     showPausedControls();
     updateDisplay();
+    saveTimerState();
   }
 
   function resumeTimer() {
@@ -483,11 +607,14 @@
     isPaused = false;
     endTime = null;
     messageIndex = 0;
+    restoredFromStorage = false;
 
     const focusMinutes = clampFocusMinutes(focusMinutesInput.value);
     focusSeconds = focusMinutes * 60;
     remainingSeconds = focusSeconds;
 
+    restoreNotice.classList.add("hidden");
+    clearTimerState();
     showRunningControls();
     showSetupScreen();
     updateDisplay();
@@ -495,19 +622,26 @@
 
   decreaseButton.addEventListener("click", () => {
     setFocusMinutes(clampFocusMinutes(focusMinutesInput.value) - 1);
+    saveSettings();
   });
 
   increaseButton.addEventListener("click", () => {
     setFocusMinutes(clampFocusMinutes(focusMinutesInput.value) + 1);
+    saveSettings();
   });
 
   focusMinutesInput.addEventListener("change", () => {
     setFocusMinutes(focusMinutesInput.value);
+    saveSettings();
   });
 
   focusMinutesInput.addEventListener("blur", () => {
     setFocusMinutes(focusMinutesInput.value);
+    saveSettings();
   });
+
+  alertSoundSelect.addEventListener("change", saveSettings);
+  focusSoundSelect.addEventListener("change", saveSettings);
 
   previewAlertButton.addEventListener("click", previewAlert);
   previewFocusButton.addEventListener("click", previewFocus);
@@ -519,8 +653,18 @@
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) {
       stopPreviewTimer();
+      saveTimerState();
     }
   });
 
-  updateDisplay();
+  window.addEventListener("pagehide", saveTimerState);
+
+  loadSettings();
+
+  focusSeconds = clampFocusMinutes(focusMinutesInput.value) * 60;
+  remainingSeconds = focusSeconds;
+
+  if (!loadTimerState()) {
+    updateDisplay();
+  }
 })();

@@ -258,6 +258,16 @@ select {
   gap: 12px;
 }
 
+.restore-notice {
+  margin: -8px 0 18px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #f2f7f6;
+  color: #2f6f68;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
 .alert-note {
   min-height: 58px;
   display: grid;
