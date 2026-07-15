@@ -303,3 +303,127 @@ select {
     padding-bottom: 24px;
   }
 }
+
+
+/* 省画面モード */
+.timer-card,
+.timer-content,
+.phase-label,
+.time-display,
+.check-message,
+.cycle-display,
+.wake-lock-status,
+.primary-button,
+.secondary-button,
+.alert-note {
+  transition:
+    background-color 0.6s ease,
+    color 0.6s ease,
+    border-color 0.6s ease,
+    box-shadow 0.6s ease,
+    opacity 0.6s ease,
+    transform 1.2s ease;
+}
+
+.timer-content {
+  will-change: transform;
+}
+
+.timer-content.shift-0 {
+  transform: translate(0, 0);
+}
+
+.timer-content.shift-1 {
+  transform: translate(5px, -4px);
+}
+
+.timer-content.shift-2 {
+  transform: translate(-4px, 5px);
+}
+
+.timer-content.shift-3 {
+  transform: translate(4px, 4px);
+}
+
+body.dim-mode {
+  background: #0f1211;
+}
+
+body.dim-mode .app-header {
+  opacity: 0.12;
+}
+
+body.dim-mode .timer-card {
+  background: #151918;
+  border-color: #202624;
+  box-shadow: none;
+}
+
+body.dim-mode .phase-label {
+  color: #8fa59f;
+}
+
+body.dim-mode .time-display {
+  color: #b8c5c1;
+  text-shadow: none;
+}
+
+body.dim-mode .check-message {
+  color: #98a6a2;
+}
+
+body.dim-mode .cycle-display,
+body.dim-mode .wake-lock-status {
+  color: #64716d;
+}
+
+body.dim-mode .primary-button {
+  background: #243d39;
+  color: #aebbb7;
+  box-shadow: none;
+  opacity: 0.58;
+}
+
+body.dim-mode .secondary-button {
+  background: #171b1a;
+  border-color: #29302e;
+  color: #8d9995;
+  opacity: 0.58;
+}
+
+body.dim-mode .alert-note {
+  background: #1b2926;
+  color: #9aaca7;
+}
+
+.dim-mode-hint {
+  margin: 14px 0 0;
+  color: #6e7a76;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+body.dim-mode .dim-mode-hint {
+  display: block !important;
+  opacity: 0.75;
+}
+
+body:not(.dim-mode) .dim-mode-hint {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .timer-card,
+  .timer-content,
+  .phase-label,
+  .time-display,
+  .check-message,
+  .cycle-display,
+  .wake-lock-status,
+  .primary-button,
+  .secondary-button,
+  .alert-note {
+    transition: none;
+  }
+}

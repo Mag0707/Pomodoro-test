@@ -76,12 +76,14 @@
     </section>
 
     <section id="timer-screen" class="screen hidden" aria-labelledby="phase-label">
-      <div class="timer-card">
-        <p id="phase-label" class="phase-label">集中時間</p>
-        <p id="time-display" class="time-display" aria-live="polite">25:00</p>
-        <p id="check-message" class="check-message">肩と顎の力を確認しましょう。</p>
-        <p id="cycle-display" class="cycle-display">1セット目</p>
-        <p id="wake-lock-status" class="wake-lock-status">画面消灯防止：未使用</p>
+      <div id="timer-card" class="timer-card">
+        <div id="timer-content" class="timer-content shift-0">
+          <p id="phase-label" class="phase-label">集中時間</p>
+          <p id="time-display" class="time-display" aria-live="polite">25:00</p>
+          <p id="check-message" class="check-message">肩と顎の力を確認しましょう。</p>
+          <p id="cycle-display" class="cycle-display">1セット目</p>
+          <p id="wake-lock-status" class="wake-lock-status">画面消灯防止：未使用</p>
+        </div>
         <p id="restore-notice" class="restore-notice hidden" role="status">
           前回のタイマーを復元しました。スタートを押すと再開します。
         </p>
@@ -98,6 +100,10 @@
         <div id="alert-controls" class="alert-note hidden" role="status">
           まもなく休憩を開始します
         </div>
+
+        <p id="dim-mode-hint" class="dim-mode-hint hidden">
+          画面をタップすると通常表示に戻ります
+        </p>
       </div>
     </section>
   </main>

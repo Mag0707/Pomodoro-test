@@ -4,6 +4,9 @@
   const BREAK_SECONDS = 5 * 60;
   const ALERT_DURATION_MS = 2000;
   const PREVIEW_DURATION_MS = 2200;
+  const DIM_MODE_DELAY_MS = 15000;
+  const MESSAGE_CHANGE_MS = 30000;
+  const SHIFT_CHANGE_MS = 30000;
   const MIN_FOCUS_MINUTES = 1;
   const MAX_FOCUS_MINUTES = 120;
 
@@ -26,6 +29,8 @@
 
   const setupScreen = document.getElementById("setup-screen");
   const timerScreen = document.getElementById("timer-screen");
+  const timerCard = document.getElementById("timer-card");
+  const timerContent = document.getElementById("timer-content");
   const focusMinutesInput = document.getElementById("focus-minutes");
   const alertSoundSelect = document.getElementById("alert-sound");
   const focusSoundSelect = document.getElementById("focus-sound");
@@ -66,6 +71,111 @@
   let activeAudioNodes = [];
   let focusTickIntervalId = null;
   let wakeLock = null;
+  let dimModeTimeoutId = null;
+  let messageIntervalId = null;
+  let shiftIntervalId = null;
+  let shiftIndex = 0;
+
+  function clearDimModeTimer() {
+    if (dimModeTimeoutId !== null) {
+      window.clearTimeout(dimModeTimeoutId);
+      dimModeTimeoutId = null;
+    }
+  }
+
+  function canUseDimMode() {
+    return (
+      setupScreen.classList.contains("hidden") &&
+      !isPaused &&
+      phase !== "alert"
+    );
+  }
+
+  function enterDimMode() {
+    if (!canUseDimMode()) {
+      return;
+    }
+
+    document.body.classList.add("dim-mode");
+  }
+
+  function leaveDimMode() {
+    document.body.classList.remove("dim-mode");
+  }
+
+  function scheduleDimMode() {
+    clearDimModeTimer();
+    leaveDimMode();
+
+    if (!canUseDimMode()) {
+      return;
+    }
+
+    dimModeTimeoutId = window.setTimeout(() => {
+      enterDimMode();
+      dimModeTimeoutId = null;
+    }, DIM_MODE_DELAY_MS);
+  }
+
+  function stopMessageRotation() {
+    if (messageIntervalId !== null) {
+      window.clearInterval(messageIntervalId);
+      messageIntervalId = null;
+    }
+  }
+
+  function startMessageRotation() {
+    stopMessageRotation();
+
+    if (setupScreen.classList.contains("hidden") === false) {
+      return;
+    }
+
+    messageIntervalId = window.setInterval(() => {
+      if (phase === "alert") {
+        return;
+      }
+
+      messageIndex += 1;
+      updateDisplay();
+      saveTimerState();
+    }, MESSAGE_CHANGE_MS);
+  }
+
+  function applyShift() {
+    timerContent.classList.remove("shift-0", "shift-1", "shift-2", "shift-3");
+    timerContent.classList.add(`shift-${shiftIndex}`);
+  }
+
+  function stopShiftRotation() {
+    if (shiftIntervalId !== null) {
+      window.clearInterval(shiftIntervalId);
+      shiftIntervalId = null;
+    }
+  }
+
+  function startShiftRotation() {
+    stopShiftRotation();
+    applyShift();
+
+    shiftIntervalId = window.setInterval(() => {
+      if (!document.body.classList.contains("dim-mode")) {
+        return;
+      }
+
+      shiftIndex = (shiftIndex + 1) % 4;
+      applyShift();
+    }, SHIFT_CHANGE_MS);
+  }
+
+  function resetScreenProtectionMode() {
+    clearDimModeTimer();
+    stopMessageRotation();
+    stopShiftRotation();
+    leaveDimMode();
+    shiftIndex = 0;
+    applyShift();
+  }
 
   function updateWakeLockStatus(message) {
     wakeLockStatus.textContent = `画面消灯防止：${message}`;
@@ -453,6 +563,9 @@
       showTimerScreen();
       showPausedControls();
       restoreNotice.classList.remove("hidden");
+      leaveDimMode();
+      startMessageRotation();
+      startShiftRotation();
       updateWakeLockStatus("停止中");
       updateDisplay();
       saveTimerState();
@@ -488,9 +601,12 @@
   function showTimerScreen() {
     setupScreen.classList.add("hidden");
     timerScreen.classList.remove("hidden");
+    startMessageRotation();
+    startShiftRotation();
   }
 
   function showSetupScreen() {
+    resetScreenProtectionMode();
     timerScreen.classList.add("hidden");
     setupScreen.classList.remove("hidden");
   }
@@ -546,6 +662,7 @@
     restoreNotice.classList.add("hidden");
 
     showRunningControls();
+    scheduleDimMode();
     requestWakeLock();
 
     if (phase === "focus") {
@@ -592,6 +709,8 @@
     endTime = null;
     isPaused = false;
 
+    clearDimModeTimer();
+    leaveDimMode();
     showAlertControls();
     updateDisplay();
     saveTimerState();
@@ -636,6 +755,8 @@
 
     stopInterval();
     stopAllAudio();
+    clearDimModeTimer();
+    leaveDimMode();
     releaseWakeLock();
     showPausedControls();
     updateDisplay();
@@ -669,6 +790,7 @@
     remainingSeconds = focusSeconds;
 
     restoreNotice.classList.add("hidden");
+    resetScreenProtectionMode();
     clearTimerState();
     showRunningControls();
     showSetupScreen();
@@ -698,6 +820,18 @@
   alertSoundSelect.addEventListener("change", saveSettings);
   focusSoundSelect.addEventListener("change", saveSettings);
 
+  timerCard.addEventListener("click", event => {
+    if (event.target.closest("button")) {
+      return;
+    }
+
+    if (!setupScreen.classList.contains("hidden")) {
+      return;
+    }
+
+    scheduleDimMode();
+  });
+
   previewAlertButton.addEventListener("click", previewAlert);
   previewFocusButton.addEventListener("click", previewFocus);
   startButton.addEventListener("click", startTimer);
@@ -713,6 +847,7 @@
     }
 
     if (!isPaused && setupScreen.classList.contains("hidden") && phase !== "alert") {
+      scheduleDimMode();
       requestWakeLock();
     }
   });
