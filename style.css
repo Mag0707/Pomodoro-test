@@ -258,6 +258,12 @@ select {
   gap: 12px;
 }
 
+.wake-lock-status {
+  margin: -12px 0 18px;
+  color: #718096;
+  font-size: 0.85rem;
+}
+
 .restore-notice {
   margin: -8px 0 18px;
   padding: 12px 14px;

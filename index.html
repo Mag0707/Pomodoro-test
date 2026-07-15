@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#ffffff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="過緊張タイマー">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
   <title>過緊張チェックタイマー</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -76,6 +81,7 @@
         <p id="time-display" class="time-display" aria-live="polite">25:00</p>
         <p id="check-message" class="check-message">肩と顎の力を確認しましょう。</p>
         <p id="cycle-display" class="cycle-display">1セット目</p>
+        <p id="wake-lock-status" class="wake-lock-status">画面消灯防止：未使用</p>
         <p id="restore-notice" class="restore-notice hidden" role="status">
           前回のタイマーを復元しました。スタートを押すと再開します。
         </p>

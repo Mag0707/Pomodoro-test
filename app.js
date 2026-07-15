@@ -41,6 +41,7 @@
   const checkMessage = document.getElementById("check-message");
   const cycleDisplay = document.getElementById("cycle-display");
   const restoreNotice = document.getElementById("restore-notice");
+  const wakeLockStatus = document.getElementById("wake-lock-status");
 
   const runningControls = document.getElementById("running-controls");
   const pausedControls = document.getElementById("paused-controls");
@@ -64,6 +65,56 @@
   let audioContext = null;
   let activeAudioNodes = [];
   let focusTickIntervalId = null;
+  let wakeLock = null;
+
+  function updateWakeLockStatus(message) {
+    wakeLockStatus.textContent = `画面消灯防止：${message}`;
+  }
+
+  async function requestWakeLock() {
+    if (!("wakeLock" in navigator)) {
+      updateWakeLockStatus("この端末では未対応");
+      return;
+    }
+
+    if (document.visibilityState !== "visible") {
+      return;
+    }
+
+    try {
+      wakeLock = await navigator.wakeLock.request("screen");
+      updateWakeLockStatus("使用中");
+
+      wakeLock.addEventListener("release", () => {
+        wakeLock = null;
+
+        if (isPaused || !setupScreen.classList.contains("hidden")) {
+          updateWakeLockStatus("停止中");
+        } else {
+          updateWakeLockStatus("解除されました");
+        }
+      });
+    } catch (_) {
+      wakeLock = null;
+      updateWakeLockStatus("利用できません");
+    }
+  }
+
+  async function releaseWakeLock() {
+    if (!wakeLock) {
+      updateWakeLockStatus("停止中");
+      return;
+    }
+
+    try {
+      await wakeLock.release();
+    } catch (_) {
+      // すでに解除されている場合は無視します。
+    } finally {
+      wakeLock = null;
+      updateWakeLockStatus("停止中");
+    }
+  }
 
   function getAudioContext() {
     if (!audioContext) {
@@ -402,6 +453,7 @@
       showTimerScreen();
       showPausedControls();
       restoreNotice.classList.remove("hidden");
+      updateWakeLockStatus("停止中");
       updateDisplay();
       saveTimerState();
 
@@ -494,6 +546,7 @@
     restoreNotice.classList.add("hidden");
 
     showRunningControls();
+    requestWakeLock();
 
     if (phase === "focus") {
       startFocusSound(focusSoundSelect.value);
@@ -583,6 +636,7 @@
 
     stopInterval();
     stopAllAudio();
+    releaseWakeLock();
     showPausedControls();
     updateDisplay();
     saveTimerState();
@@ -601,6 +655,7 @@
     stopAlertTimeout();
     stopPreviewTimer();
     stopAllAudio();
+    releaseWakeLock();
 
     phase = "focus";
     cycle = 1;
@@ -654,11 +709,25 @@
     if (document.hidden) {
       stopPreviewTimer();
       saveTimerState();
+      return;
+    }
+
+    if (!isPaused && setupScreen.classList.contains("hidden") && phase !== "alert") {
+      requestWakeLock();
     }
   });
 
   window.addEventListener("pagehide", saveTimerState);
 
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./service-worker.js").catch(() => {
+        // オフライン機能が使えなくても、タイマー本体はそのまま利用できます。
+      });
+    });
+  }
+
+  updateWakeLockStatus("未使用");
   loadSettings();
 
   focusSeconds = clampFocusMinutes(focusMinutesInput.value) * 60;
