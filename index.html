@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <title>過緊張チェックタイマー</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="app-header">
+      <p class="eyebrow">TENSION CHECK TIMER</p>
+      <h1>過緊張チェックタイマー</h1>
+      <p class="subtitle">集中しすぎていないか、定期的に確認するためのタイマーです。</p>
+    </header>
+
+    <section id="setup-screen" class="screen" aria-labelledby="setup-title">
+      <div class="card">
+        <h2 id="setup-title">タイマー設定</h2>
+
+        <label class="field-label" for="focus-minutes">集中時間</label>
+        <div class="minute-control">
+          <button id="decrease-button" class="step-button" type="button" aria-label="集中時間を1分減らす">−</button>
+          <div class="minute-display">
+            <input
+              id="focus-minutes"
+              type="number"
+              min="1"
+              max="120"
+              step="1"
+              value="25"
+              inputmode="numeric"
+              aria-describedby="minute-help"
+            >
+            <span>分</span>
+          </div>
+          <button id="increase-button" class="step-button" type="button" aria-label="集中時間を1分増やす">＋</button>
+        </div>
+        <p id="minute-help" class="help-text">1〜120分で指定できます。休憩は5分固定です。</p>
+
+        <button id="start-button" class="primary-button" type="button">スタート</button>
+      </div>
+    </section>
+
+    <section id="timer-screen" class="screen hidden" aria-labelledby="phase-label">
+      <div class="timer-card">
+        <p id="phase-label" class="phase-label">集中時間</p>
+        <p id="time-display" class="time-display" aria-live="polite">25:00</p>
+        <p id="check-message" class="check-message">肩と顎の力を確認しましょう。</p>
+        <p id="cycle-display" class="cycle-display">1セット目</p>
+
+        <div id="running-controls" class="button-stack">
+          <button id="pause-button" class="primary-button" type="button">一時停止</button>
+        </div>
+
+        <div id="paused-controls" class="button-stack hidden">
+          <button id="resume-button" class="primary-button" type="button">スタート</button>
+          <button id="reset-button" class="secondary-button" type="button">リセット</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
