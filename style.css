@@ -471,3 +471,47 @@ body.dim-mode .check-message {
 body.dim-mode .timer-card {
   cursor: pointer;
 }
+
+
+/* 第8版：省画面モードを完全な黒背景に統一 */
+body.dim-mode,
+body.dim-mode .app-shell,
+body.dim-mode #timer-screen,
+body.dim-mode .timer-card,
+body.dim-mode .timer-content {
+  background: #000000 !important;
+  border-color: #000000 !important;
+  box-shadow: none !important;
+}
+
+body.dim-mode .timer-card {
+  outline: none !important;
+}
+
+body.dim-mode .app-header,
+body.dim-mode .cycle-display,
+body.dim-mode .wake-lock-status,
+body.dim-mode .restore-notice,
+body.dim-mode #running-controls,
+body.dim-mode #paused-controls,
+body.dim-mode #alert-controls,
+body.dim-mode .dim-mode-hint,
+body.dim-mode #running-controls button,
+body.dim-mode #paused-controls button,
+body.dim-mode .app-header *,
+body.dim-mode .cycle-display *,
+body.dim-mode .wake-lock-status *,
+body.dim-mode .restore-notice *,
+body.dim-mode .dim-mode-hint * {
+  color: #000000 !important;
+  background: #000000 !important;
+  border-color: #000000 !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+body.dim-mode .phase-label,
+body.dim-mode .time-display,
+body.dim-mode .check-message {
+  background: transparent !important;
+}
