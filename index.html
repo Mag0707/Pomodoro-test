@@ -10,7 +10,7 @@
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <title>過緊張チェックタイマー</title>
-  <link rel="stylesheet" href="style.css?v=23">
+  <link rel="stylesheet" href="style.css?v=24">
 </head>
 <body>
   <main class="app-shell">
@@ -23,8 +23,8 @@
         </svg>
       </div>
       <p class="eyebrow">TENSION CHECK TIMER</p>
-      <h1>過緊張チェックタイマー</h1>
-      <p class="subtitle">
+      <h1 data-i18n="appTitle">過緊張チェックタイマー</h1>
+      <p class="subtitle" data-i18n-html="subtitle">
         集中しすぎを定期的にチェック。<br class="mobile-break">
         力を抜くきっかけを作るタイマーです。
       </p>
@@ -33,12 +33,12 @@
     <section id="setup-screen" class="screen" aria-labelledby="setup-title">
       <div class="card">
         <div class="settings-heading-row">
-          <h2 id="setup-title">タイマー設定</h2>
+          <h2 id="setup-title" data-i18n="timerSettings">タイマー設定</h2>
           <button
             id="theme-settings-button"
             class="icon-button"
             type="button"
-            aria-label="デザインテーマを変更"
+            data-i18n-aria="changeTheme" aria-label="デザインテーマを変更"
             aria-haspopup="dialog"
             aria-controls="theme-sheet"
           >
@@ -50,9 +50,9 @@
         </div>
 
         <div id="focus-minutes-group">
-          <label class="field-label" for="focus-minutes">集中時間</label>
+          <label class="field-label" for="focus-minutes" data-i18n="focusDuration">集中時間</label>
           <div class="minute-control">
-            <button id="decrease-button" class="step-button" type="button" aria-label="集中時間を1分減らす">−</button>
+            <button id="decrease-button" class="step-button" type="button" data-i18n-aria="decreaseMinute" aria-label="集中時間を1分減らす">−</button>
             <div class="minute-display">
               <input
                 id="focus-minutes"
@@ -64,29 +64,29 @@
                 inputmode="numeric"
                 aria-describedby="minute-help"
               >
-              <span>分</span>
+              <span data-i18n="minutesUnit">分</span>
             </div>
-            <button id="increase-button" class="step-button" type="button" aria-label="集中時間を1分増やす">＋</button>
+            <button id="increase-button" class="step-button" type="button" data-i18n-aria="increaseMinute" aria-label="集中時間を1分増やす">＋</button>
           </div>
-          <p id="minute-help" class="help-text">1〜120分で指定できます。休憩は5分固定です。</p>
+          <p id="minute-help" class="help-text" data-i18n="minuteHelp">1〜120分で指定できます。休憩は5分固定です。</p>
         </div>
 
         <div class="setting-group">
-          <label class="field-label" for="alert-sound">集中終了のアラート音</label>
+          <label class="field-label" for="alert-sound" data-i18n="focusEndAlert">集中終了のアラート音</label>
           <div class="sound-row">
             <select id="alert-sound">
-              <option value="soft-chime">やわらかいチャイム</option>
-              <option value="bell">ベル</option>
-              <option value="digital">電子音</option>
+              <option value="soft-chime" data-i18n="softChime">やわらかいチャイム</option>
+              <option value="bell" data-i18n="bell">ベル</option>
+              <option value="digital" data-i18n="digital">電子音</option>
             </select>
-            <button id="preview-alert-button" class="preview-button" type="button">試聴</button>
+            <button id="preview-alert-button" class="preview-button" type="button" data-i18n="preview">試聴</button>
           </div>
-          <p class="help-text">集中終了時に約2秒だけ鳴ります。</p>
+          <p class="help-text" data-i18n="alertHelp">集中終了時に約2秒だけ鳴ります。</p>
 
           <label class="toggle-row" for="break-end-alert">
             <span class="toggle-text">
-              <strong>休憩終了時にも同じ音を鳴らす</strong>
-              <small>約2秒鳴った後、次の集中時間を始めます。</small>
+              <strong data-i18n="breakEndSameSound">休憩終了時にも同じ音を鳴らす</strong>
+              <small data-i18n="breakEndHelp">約2秒鳴った後、次の集中時間を始めます。</small>
             </span>
             <input id="break-end-alert" type="checkbox" checked>
             <span class="toggle-switch" aria-hidden="true"></span>
@@ -94,22 +94,22 @@
         </div>
 
         <div class="setting-group">
-          <label class="field-label" for="focus-sound">集中中の音</label>
+          <label class="field-label" for="focus-sound" data-i18n="focusSound">集中中の音</label>
           <div class="sound-row">
             <select id="focus-sound">
-              <option value="none">無音</option>
-              <option value="soft-tick">小さな時計音</option>
-              <option value="soft-breeze">やわらかな風音</option>
-              <option value="gentle-rain">やさしい雨音</option>
+              <option value="none" data-i18n="silent">無音</option>
+              <option value="soft-tick" data-i18n="softTick">小さな時計音</option>
+              <option value="soft-breeze" data-i18n="softBreeze">やわらかな風音</option>
+              <option value="gentle-rain" data-i18n="gentleRain">やさしい雨音</option>
             </select>
-            <button id="preview-focus-button" class="preview-button" type="button">試聴</button>
+            <button id="preview-focus-button" class="preview-button" type="button" data-i18n="preview">試聴</button>
           </div>
-          <p class="help-text compact">休憩中と一時停止中は必ず無音になります。</p>
+          <p class="help-text compact" data-i18n="focusSoundHelp">休憩中と一時停止中は必ず無音になります。</p>
         </div>
 
       </div>
 
-      <button id="start-button" class="primary-button setup-start-button" type="button">スタート</button>
+      <button id="start-button" class="primary-button setup-start-button" type="button" data-i18n="start">スタート</button>
     </section>
 
     <section id="timer-screen" class="screen hidden" aria-labelledby="phase-label">
@@ -121,24 +121,24 @@
           <p id="cycle-display" class="cycle-display">1セット目</p>
           <p id="wake-lock-status" class="wake-lock-status">画面消灯防止：未使用</p>
         </div>
-        <p id="restore-notice" class="restore-notice hidden" role="status">
+        <p id="restore-notice" class="restore-notice hidden" role="status" data-i18n="restoreNotice">
           前回のタイマーを復元しました。スタートを押すと再開します。
         </p>
 
         <div id="running-controls" class="button-stack">
-          <button id="pause-button" class="primary-button" type="button">一時停止</button>
+          <button id="pause-button" class="primary-button" type="button" data-i18n="pause">一時停止</button>
         </div>
 
         <div id="paused-controls" class="button-stack hidden">
-          <button id="resume-button" class="primary-button" type="button">スタート</button>
-          <button id="reset-button" class="secondary-button" type="button">リセット</button>
+          <button id="resume-button" class="primary-button" type="button" data-i18n="start">スタート</button>
+          <button id="reset-button" class="secondary-button" type="button" data-i18n="reset">リセット</button>
         </div>
 
         <div id="alert-controls" class="alert-note hidden" role="status">
           次の時間をまもなく開始します
         </div>
 
-        <p id="dim-mode-hint" class="dim-mode-hint hidden">
+        <p id="dim-mode-hint" class="dim-mode-hint hidden" data-i18n="dimHint">
           画面をタップすると通常表示に戻ります
         </p>
       </div>
@@ -157,49 +157,61 @@
     <div class="sheet-handle" aria-hidden="true"></div>
     <div class="sheet-header">
       <div>
-        <p class="sheet-eyebrow">DESIGN THEME</p>
-        <h2 id="theme-sheet-title">デザインテーマ</h2>
+        <p class="sheet-eyebrow" data-i18n="designThemeEyebrow">DESIGN THEME</p>
+        <h2 id="theme-sheet-title" data-i18n="designTheme">デザインテーマ</h2>
       </div>
-      <button id="theme-sheet-close" class="sheet-close-button" type="button" aria-label="閉じる">×</button>
+      <button id="theme-sheet-close" class="sheet-close-button" type="button" data-i18n-aria="close" aria-label="閉じる">×</button>
     </div>
 
-    <p class="sheet-description">お好みの色合いを選んでください。選択内容は保存されます。</p>
+    <p class="sheet-description" data-i18n="themeDescription">お好みの色合いを選んでください。選択内容は保存されます。</p>
 
-    <div class="theme-grid" role="radiogroup" aria-label="デザインテーマ">
+    <div class="theme-grid" role="radiogroup" data-i18n-aria="designTheme" aria-label="デザインテーマ">
       <button class="theme-option" type="button" data-theme-value="beige" role="radio" aria-checked="true">
         <span class="theme-preview theme-preview-beige" aria-hidden="true">
           <span></span><span></span><span></span>
         </span>
-        <strong>ナチュラルベージュ</strong>
-        <small>落ち着いた温かみ</small>
+        <strong data-i18n="naturalBeige">ナチュラルベージュ</strong>
+        <small data-i18n="naturalBeigeDesc">落ち着いた温かみ</small>
       </button>
 
       <button class="theme-option" type="button" data-theme-value="lavender" role="radio" aria-checked="false">
         <span class="theme-preview theme-preview-lavender" aria-hidden="true">
           <span></span><span></span><span></span>
         </span>
-        <strong>ラベンダー</strong>
-        <small>やさしく上品</small>
+        <strong data-i18n="lavender">ラベンダー</strong>
+        <small data-i18n="lavenderDesc">やさしく上品</small>
       </button>
 
       <button class="theme-option" type="button" data-theme-value="mint" role="radio" aria-checked="false">
         <span class="theme-preview theme-preview-mint" aria-hidden="true">
           <span></span><span></span><span></span>
         </span>
-        <strong>ミントグリーン</strong>
-        <small>清潔で穏やか</small>
+        <strong data-i18n="mintGreen">ミントグリーン</strong>
+        <small data-i18n="mintDesc">清潔で穏やか</small>
       </button>
 
       <button class="theme-option" type="button" data-theme-value="pink" role="radio" aria-checked="false">
         <span class="theme-preview theme-preview-pink" aria-hidden="true">
           <span></span><span></span><span></span>
         </span>
-        <strong>ピンクベージュ</strong>
-        <small>柔らかく華やか</small>
+        <strong data-i18n="pinkBeige">ピンクベージュ</strong>
+        <small data-i18n="pinkDesc">柔らかく華やか</small>
       </button>
+    </div>
+
+    <div class="language-settings">
+      <div class="language-heading">
+        <p class="sheet-eyebrow" data-i18n="languageEyebrow">LANGUAGE</p>
+        <h3 data-i18n="displayLanguage">表示言語</h3>
+      </div>
+      <div class="language-switch" role="radiogroup" data-i18n-aria="displayLanguage" aria-label="表示言語">
+        <button class="language-option" type="button" data-language-value="ja" role="radio" aria-checked="true">日本語</button>
+        <button class="language-option" type="button" data-language-value="en" role="radio" aria-checked="false">English</button>
+      </div>
+      <p class="language-note" data-i18n="languageNote">選択した言語は次回も保持されます。</p>
     </div>
   </section>
 
-  <script src="app.js?v=23"></script>
+  <script src="app.js?v=24"></script>
 </body>
 </html>

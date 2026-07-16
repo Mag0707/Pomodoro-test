@@ -13,19 +13,163 @@
   const SETTINGS_STORAGE_KEY = "tension-check-timer-settings-v1";
   const TIMER_STORAGE_KEY = "tension-check-timer-state-v1";
 
-  const focusMessages = [
-    "肩と顎の力を確認しましょう。",
-    "息を止めていませんか？",
-    "画面を見つめすぎていませんか？",
-    "少し力を抜いても大丈夫です。"
-  ];
+  const translations = {
+    ja: {
+      appTitle: "過緊張チェックタイマー",
+      subtitle: '集中しすぎを定期的にチェック。<br class="mobile-break">力を抜くきっかけを作るタイマーです。',
+      timerSettings: "タイマー設定",
+      changeTheme: "デザインテーマと言語を変更",
+      focusDuration: "集中時間",
+      decreaseMinute: "集中時間を1分減らす",
+      increaseMinute: "集中時間を1分増やす",
+      minutesUnit: "分",
+      minuteHelp: "1〜120分で指定できます。休憩は5分固定です。",
+      focusEndAlert: "集中終了のアラート音",
+      softChime: "やわらかいチャイム",
+      bell: "ベル",
+      digital: "電子音",
+      preview: "試聴",
+      alertHelp: "集中終了時に約2秒だけ鳴ります。",
+      breakEndSameSound: "休憩終了時にも同じ音を鳴らす",
+      breakEndHelp: "約2秒鳴った後、次の集中時間を始めます。",
+      focusSound: "集中中の音",
+      silent: "無音",
+      softTick: "小さな時計音",
+      softBreeze: "やわらかな風音",
+      gentleRain: "やさしい雨音",
+      focusSoundHelp: "休憩中と一時停止中は必ず無音になります。",
+      start: "スタート",
+      pause: "一時停止",
+      reset: "リセット",
+      restoreNotice: "前回のタイマーを復元しました。スタートを押すと再開します。",
+      dimHint: "画面をタップすると通常表示に戻ります",
+      designThemeEyebrow: "DESIGN THEME",
+      designTheme: "デザインテーマ",
+      close: "閉じる",
+      themeDescription: "お好みの色合いを選んでください。選択内容は保存されます。",
+      naturalBeige: "ナチュラルベージュ",
+      naturalBeigeDesc: "落ち着いた温かみ",
+      lavender: "ラベンダー",
+      lavenderDesc: "やさしく上品",
+      mintGreen: "ミントグリーン",
+      mintDesc: "清潔で穏やか",
+      pinkBeige: "ピンクベージュ",
+      pinkDesc: "柔らかく華やか",
+      languageEyebrow: "LANGUAGE",
+      displayLanguage: "表示言語",
+      languageNote: "選択した言語は次回も保持されます。",
+      phaseFocus: "集中時間",
+      phaseFocusPaused: "集中時間・一時停止中",
+      phaseBreak: "休憩時間",
+      phaseBreakPaused: "休憩時間・一時停止中",
+      focusEnded: "集中時間終了",
+      breakEnded: "休憩時間終了",
+      afterAlertBreak: "音が止まったら、5分休憩を始めます。",
+      afterAlertFocus: "音が止まったら、次の集中時間を始めます。",
+      startingBreak: "まもなく休憩を開始します",
+      startingFocus: "まもなく集中時間を開始します",
+      cycle: n => `${n}セット目`,
+      wakeLockPrefix: "画面消灯防止：",
+      wakeUnsupported: "この端末では未対応",
+      wakeActive: "使用中",
+      wakeStopped: "停止中",
+      wakeReleased: "解除されました",
+      wakeUnavailable: "利用できません",
+      wakeUnused: "未使用",
+      focusMessages: [
+        "肩と顎の力を確認しましょう。",
+        "息を止めていませんか？",
+        "画面を見つめすぎていませんか？",
+        "少し力を抜いても大丈夫です。"
+      ],
+      breakMessages: [
+        "一度、仕事から視線を外しましょう。",
+        "肩を下げて、ゆっくり息を吐きましょう。",
+        "目を閉じるだけでも休憩になります。",
+        "何もしない時間にして大丈夫です。"
+      ]
+    },
+    en: {
+      appTitle: "Tension Check Timer",
+      subtitle: 'Check in before focus turns into tension.<br class="mobile-break">A gentle timer to help you release and reset.',
+      timerSettings: "Timer Settings",
+      changeTheme: "Change design theme and language",
+      focusDuration: "Focus Duration",
+      decreaseMinute: "Decrease focus duration by one minute",
+      increaseMinute: "Increase focus duration by one minute",
+      minutesUnit: "min",
+      minuteHelp: "Choose 1–120 minutes. Breaks are fixed at 5 minutes.",
+      focusEndAlert: "Focus-End Alert",
+      softChime: "Soft Chime",
+      bell: "Bell",
+      digital: "Digital Tone",
+      preview: "Preview",
+      alertHelp: "Plays for about 2 seconds when focus time ends.",
+      breakEndSameSound: "Play the same sound when the break ends",
+      breakEndHelp: "The next focus session starts after the 2-second alert.",
+      focusSound: "Sound During Focus",
+      silent: "Silent",
+      softTick: "Soft Clock Tick",
+      softBreeze: "Gentle Breeze",
+      gentleRain: "Gentle Rain",
+      focusSoundHelp: "Sound is always off during breaks and while paused.",
+      start: "Start",
+      pause: "Pause",
+      reset: "Reset",
+      restoreNotice: "Your previous timer was restored. Tap Start to resume.",
+      dimHint: "Tap the screen to return to the normal view",
+      designThemeEyebrow: "DESIGN THEME",
+      designTheme: "Design Theme",
+      close: "Close",
+      themeDescription: "Choose a color palette. Your selection will be saved.",
+      naturalBeige: "Natural Beige",
+      naturalBeigeDesc: "Calm and warm",
+      lavender: "Lavender",
+      lavenderDesc: "Soft and elegant",
+      mintGreen: "Mint Green",
+      mintDesc: "Fresh and soothing",
+      pinkBeige: "Pink Beige",
+      pinkDesc: "Soft and graceful",
+      languageEyebrow: "LANGUAGE",
+      displayLanguage: "Display Language",
+      languageNote: "Your language choice will be saved for next time.",
+      phaseFocus: "Focus Time",
+      phaseFocusPaused: "Focus Time · Paused",
+      phaseBreak: "Break Time",
+      phaseBreakPaused: "Break Time · Paused",
+      focusEnded: "Focus Complete",
+      breakEnded: "Break Complete",
+      afterAlertBreak: "Your 5-minute break will begin when the sound ends.",
+      afterAlertFocus: "Your next focus session will begin when the sound ends.",
+      startingBreak: "Break starting shortly",
+      startingFocus: "Focus session starting shortly",
+      cycle: n => `Set ${n}`,
+      wakeLockPrefix: "Keep Screen Awake: ",
+      wakeUnsupported: "Not supported",
+      wakeActive: "On",
+      wakeStopped: "Paused",
+      wakeReleased: "Released",
+      wakeUnavailable: "Unavailable",
+      wakeUnused: "Off",
+      focusMessages: [
+        "Check your shoulders and jaw.",
+        "Are you holding your breath?",
+        "Let your eyes soften for a moment.",
+        "It is okay to release a little tension."
+      ],
+      breakMessages: [
+        "Look away from your work for a moment.",
+        "Lower your shoulders and breathe out slowly.",
+        "Even closing your eyes can be a real break.",
+        "It is okay to do nothing for a few minutes."
+      ]
+    }
+  };
 
-  const breakMessages = [
-    "一度、仕事から視線を外しましょう。",
-    "肩を下げて、ゆっくり息を吐きましょう。",
-    "目を閉じるだけでも休憩になります。",
-    "何もしない時間にして大丈夫です。"
-  ];
+  function t(key) {
+    const value = translations[selectedLanguage]?.[key] ?? translations.ja[key] ?? key;
+    return typeof value === "function" ? value : value;
+  }
 
   const setupScreen = document.getElementById("setup-screen");
   const timerScreen = document.getElementById("timer-screen");
@@ -40,6 +184,7 @@
   const themeOverlay = document.getElementById("theme-overlay");
   const themeSheetClose = document.getElementById("theme-sheet-close");
   const themeOptions = [...document.querySelectorAll(".theme-option")];
+  const languageOptions = [...document.querySelectorAll(".language-option")];
 
   const decreaseButton = document.getElementById("decrease-button");
   const increaseButton = document.getElementById("increase-button");
@@ -74,11 +219,13 @@
   let restoredFromStorage = false;
   let alertNextPhase = "break";
   let selectedTheme = "beige";
+  let selectedLanguage = "ja";
 
   let audioContext = null;
   let activeAudioNodes = [];
   let focusTickIntervalId = null;
   let wakeLock = null;
+  let currentWakeLockStatusKey = "wakeUnused";
   let dimModeTimeoutId = null;
   let messageIntervalId = null;
   let shiftIntervalId = null;
@@ -185,13 +332,14 @@
     applyShift();
   }
 
-  function updateWakeLockStatus(message) {
-    wakeLockStatus.textContent = `画面消灯防止：${message}`;
+  function updateWakeLockStatus(statusKey) {
+    currentWakeLockStatusKey = statusKey;
+    wakeLockStatus.textContent = `${t("wakeLockPrefix")}${t(statusKey)}`;
   }
 
   async function requestWakeLock() {
     if (!("wakeLock" in navigator)) {
-      updateWakeLockStatus("この端末では未対応");
+      updateWakeLockStatus("wakeUnsupported");
       return;
     }
 
@@ -201,26 +349,26 @@
 
     try {
       wakeLock = await navigator.wakeLock.request("screen");
-      updateWakeLockStatus("使用中");
+      updateWakeLockStatus("wakeActive");
 
       wakeLock.addEventListener("release", () => {
         wakeLock = null;
 
         if (isPaused || !setupScreen.classList.contains("hidden")) {
-          updateWakeLockStatus("停止中");
+          updateWakeLockStatus("wakeStopped");
         } else {
-          updateWakeLockStatus("解除されました");
+          updateWakeLockStatus("wakeReleased");
         }
       });
     } catch (_) {
       wakeLock = null;
-      updateWakeLockStatus("利用できません");
+      updateWakeLockStatus("wakeUnavailable");
     }
   }
 
   async function releaseWakeLock() {
     if (!wakeLock) {
-      updateWakeLockStatus("停止中");
+      updateWakeLockStatus("wakeStopped");
       return;
     }
 
@@ -230,7 +378,7 @@
       // すでに解除されている場合は無視します。
     } finally {
       wakeLock = null;
-      updateWakeLockStatus("停止中");
+      updateWakeLockStatus("wakeStopped");
     }
   }
 
@@ -466,6 +614,38 @@
   }
 
 
+  function applyLanguage(language, shouldRefreshDisplay = true) {
+    selectedLanguage = language === "en" ? "en" : "ja";
+    document.documentElement.lang = selectedLanguage;
+
+    for (const element of document.querySelectorAll("[data-i18n]")) {
+      element.textContent = t(element.dataset.i18n);
+    }
+
+    for (const element of document.querySelectorAll("[data-i18n-html]")) {
+      element.innerHTML = t(element.dataset.i18nHtml);
+    }
+
+    for (const element of document.querySelectorAll("[data-i18n-aria]")) {
+      element.setAttribute("aria-label", t(element.dataset.i18nAria));
+    }
+
+    for (const option of languageOptions) {
+      option.setAttribute(
+        "aria-checked",
+        String(option.dataset.languageValue === selectedLanguage)
+      );
+    }
+
+    document.body.classList.toggle("language-en", selectedLanguage === "en");
+    document.title = t("appTitle");
+
+    if (shouldRefreshDisplay) {
+      updateDisplay();
+      updateWakeLockStatus(currentWakeLockStatusKey);
+    }
+  }
+
   function applyTheme(theme) {
     const validThemes = ["beige", "lavender", "mint", "pink"];
     selectedTheme = validThemes.includes(theme) ? theme : "beige";
@@ -503,7 +683,8 @@
       alertSound: alertSoundSelect.value,
       focusSound: focusSoundSelect.value,
       breakEndAlert: breakEndAlertCheckbox.checked,
-      theme: selectedTheme
+      theme: selectedTheme,
+      language: selectedLanguage
     };
 
     localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
@@ -515,6 +696,7 @@
 
       if (!stored) {
         applyTheme("beige");
+        applyLanguage("ja", false);
         return;
       }
 
@@ -532,6 +714,7 @@
 
       breakEndAlertCheckbox.checked = settings.breakEndAlert !== false;
       applyTheme(settings.theme ?? "beige");
+      applyLanguage(settings.language ?? "ja", false);
     } catch (_) {
       localStorage.removeItem(SETTINGS_STORAGE_KEY);
     }
@@ -618,7 +801,7 @@
       leaveDimMode();
       startMessageRotation();
       startShiftRotation();
-      updateWakeLockStatus("停止中");
+      updateWakeLockStatus("wakeStopped");
       updateDisplay();
       saveTimerState();
 
@@ -633,27 +816,27 @@
     if (phase === "alert") {
       const movingToBreak = alertNextPhase === "break";
 
-      phaseLabel.textContent = movingToBreak ? "集中時間終了" : "休憩時間終了";
+      phaseLabel.textContent = movingToBreak ? t("focusEnded") : t("breakEnded");
       timeDisplay.textContent = "00:00";
       checkMessage.textContent = movingToBreak
-        ? "音が止まったら、5分休憩を始めます。"
-        : "音が止まったら、次の集中時間を始めます。";
+        ? t("afterAlertBreak")
+        : t("afterAlertFocus");
       alertControls.textContent = movingToBreak
-        ? "まもなく休憩を開始します"
-        : "まもなく集中時間を開始します";
-      cycleDisplay.textContent = `${cycle}セット目`;
+        ? t("startingBreak")
+        : t("startingFocus");
+      cycleDisplay.textContent = t("cycle")(cycle);
       return;
     }
 
     phaseLabel.textContent =
       phase === "focus"
-        ? (isPaused ? "集中時間・一時停止中" : "集中時間")
-        : (isPaused ? "休憩時間・一時停止中" : "休憩時間");
+        ? (isPaused ? t("phaseFocusPaused") : t("phaseFocus"))
+        : (isPaused ? t("phaseBreakPaused") : t("phaseBreak"));
 
     timeDisplay.textContent = formatTime(remainingSeconds);
-    cycleDisplay.textContent = `${cycle}セット目`;
+    cycleDisplay.textContent = t("cycle")(cycle);
 
-    const messages = phase === "focus" ? focusMessages : breakMessages;
+    const messages = phase === "focus" ? t("focusMessages") : t("breakMessages");
     checkMessage.textContent = messages[messageIndex % messages.length];
   }
 
@@ -919,6 +1102,13 @@
     });
   }
 
+  for (const option of languageOptions) {
+    option.addEventListener("click", () => {
+      applyLanguage(option.dataset.languageValue);
+      saveSettings();
+    });
+  }
+
   document.addEventListener("keydown", event => {
     if (event.key === "Escape" && !themeSheet.classList.contains("hidden")) {
       closeThemeSheet();
@@ -955,8 +1145,9 @@
     });
   }
 
-  updateWakeLockStatus("未使用");
+  updateWakeLockStatus("wakeUnused");
   loadSettings();
+  applyLanguage(selectedLanguage, false);
 
   focusSeconds = clampFocusMinutes(focusMinutesInput.value) * 60;
   remainingSeconds = focusSeconds;
