@@ -1098,3 +1098,189 @@ body.sheet-open {
     padding-right: 16px;
   }
 }
+
+
+/* 第14版：カラーパレット見本に合わせたパステル配色 */
+:root {
+  --theme-bg-top: #fffdfa;
+  --theme-bg-bottom: #fff4e9;
+  --theme-surface: #fffdfa;
+  --theme-surface-soft: #fff7f0;
+  --theme-border: #f2d9c5;
+  --theme-accent: #f7b58e;
+  --theme-accent-strong: #c97e55;
+  --theme-accent-soft: #fde6d7;
+  --theme-title: #a9633f;
+  --theme-text: #4e3b31;
+  --theme-muted: #8b786c;
+  --theme-shadow: rgba(189, 124, 78, 0.10);
+  --theme-decor: #efbd95;
+  --theme-decor-soft: #f8d8be;
+}
+
+body[data-theme="lavender"] {
+  --theme-bg-top: #fefcff;
+  --theme-bg-bottom: #f5effd;
+  --theme-surface: #fefcff;
+  --theme-surface-soft: #faf6ff;
+  --theme-border: #e5d9f5;
+  --theme-accent: #bca5e4;
+  --theme-accent-strong: #8265bb;
+  --theme-accent-soft: #eee5fa;
+  --theme-title: #7659ad;
+  --theme-text: #463e55;
+  --theme-muted: #7c718b;
+  --theme-shadow: rgba(120, 89, 173, 0.10);
+  --theme-decor: #cbb7eb;
+  --theme-decor-soft: #e9def7;
+}
+
+body[data-theme="mint"] {
+  --theme-bg-top: #fbfffd;
+  --theme-bg-bottom: #eef9f5;
+  --theme-surface: #fcfffd;
+  --theme-surface-soft: #f5fbf8;
+  --theme-border: #d6ebe3;
+  --theme-accent: #8fd4c1;
+  --theme-accent-strong: #4f9b87;
+  --theme-accent-soft: #dff4ed;
+  --theme-title: #438a76;
+  --theme-text: #334a42;
+  --theme-muted: #71837d;
+  --theme-shadow: rgba(73, 147, 123, 0.10);
+  --theme-decor: #a9ddcd;
+  --theme-decor-soft: #dff3ec;
+}
+
+body[data-theme="pink"] {
+  --theme-bg-top: #fffdfd;
+  --theme-bg-bottom: #fff0f2;
+  --theme-surface: #fffdfd;
+  --theme-surface-soft: #fff6f7;
+  --theme-border: #f3d8dc;
+  --theme-accent: #f4a6b1;
+  --theme-accent-strong: #c66775;
+  --theme-accent-soft: #fde2e6;
+  --theme-title: #b85b69;
+  --theme-text: #503a3e;
+  --theme-muted: #846f73;
+  --theme-shadow: rgba(182, 88, 104, 0.10);
+  --theme-decor: #f4b9c1;
+  --theme-decor-soft: #f9dce1;
+}
+
+/* 軽量SVGの四隅装飾 */
+.theme-decoration {
+  position: fixed;
+  z-index: 0;
+  width: 132px;
+  height: 132px;
+  pointer-events: none;
+  opacity: 0.72;
+}
+
+.theme-decoration svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.theme-decoration-top {
+  top: max(4px, env(safe-area-inset-top));
+  right: -20px;
+}
+
+.theme-decoration-bottom {
+  left: -22px;
+  bottom: max(2px, env(safe-area-inset-bottom));
+  transform: rotate(7deg);
+}
+
+.decor-leaves path {
+  fill: var(--theme-decor-soft);
+  stroke: var(--theme-decor);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.decor-flowers circle,
+.decor-dots circle {
+  fill: var(--theme-decor);
+}
+
+.decor-center {
+  fill: var(--theme-surface) !important;
+}
+
+.app-shell {
+  position: relative;
+  z-index: 1;
+}
+
+body.dim-mode .theme-decoration,
+body.sheet-open .theme-decoration {
+  opacity: 0;
+}
+
+body[data-theme="beige"] .decor-flowers {
+  opacity: 0.22;
+}
+
+body[data-theme="lavender"] .decor-flowers,
+body[data-theme="mint"] .decor-flowers {
+  opacity: 0;
+}
+
+body[data-theme="pink"] .decor-leaves {
+  opacity: 0.25;
+}
+
+body[data-theme="pink"] .decor-flowers {
+  opacity: 1;
+}
+
+/* テーマ選択パネル内の見本色も更新 */
+.theme-preview-beige {
+  background: #fff4e9 !important;
+}
+.theme-preview-beige span {
+  background: #f7b58e !important;
+}
+
+.theme-preview-lavender {
+  background: #f5effd !important;
+}
+.theme-preview-lavender span {
+  background: #bca5e4 !important;
+}
+
+.theme-preview-mint {
+  background: #eef9f5 !important;
+}
+.theme-preview-mint span {
+  background: #8fd4c1 !important;
+}
+
+.theme-preview-pink {
+  background: #fff0f2 !important;
+}
+.theme-preview-pink span {
+  background: #f4a6b1 !important;
+}
+
+@media (max-width: 430px) {
+  .theme-decoration {
+    width: 112px;
+    height: 112px;
+    opacity: 0.62;
+  }
+
+  .theme-decoration-top {
+    right: -28px;
+  }
+
+  .theme-decoration-bottom {
+    left: -30px;
+  }
+}
