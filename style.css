@@ -1367,3 +1367,39 @@ body.dim-mode .theme-decoration-set {
   .theme-decoration-set .theme-decoration-top { right: -28px; }
   .theme-decoration-set .theme-decoration-bottom { left: -30px; }
 }
+
+
+/* 第16版：選択されたSVG別案 */
+.lavender-simple .stem,
+.lavender-simple .side-stem,
+.mint-small-branch .stem,
+.mint-small-branch .twig-line,
+.pink-natural .stem,
+.pink-natural .branch {
+  fill: none;
+  stroke: var(--theme-decor);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.lavender-simple ellipse,
+.lavender-simple circle {
+  fill: var(--theme-decor);
+  opacity: 0.9;
+}
+
+.mint-small-branch .leaf,
+.pink-natural .leaf {
+  fill: var(--theme-decor-soft);
+  stroke: var(--theme-decor);
+  stroke-width: 1.5;
+}
+
+.pink-natural .flower circle {
+  fill: var(--theme-decor);
+}
+
+.pink-natural .flower .center {
+  fill: var(--theme-surface);
+}
