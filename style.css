@@ -1648,3 +1648,15 @@ body[data-theme="beige"] {
     line-height: 1.65;
   }
 }
+
+
+/* 第20版：指定された文字だけを明確に太字化 */
+.app-header h1,
+#setup-title,
+label[for="focus-minutes"],
+label[for="alert-sound"],
+label[for="focus-sound"],
+#start-button,
+#resume-button {
+  font-weight: 700;
+}
