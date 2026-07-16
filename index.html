@@ -25,7 +25,17 @@
 
     <section id="setup-screen" class="screen" aria-labelledby="setup-title">
       <div class="card">
-        <h2 id="setup-title">タイマー設定</h2>
+        <div class="settings-heading-row">
+          <h2 id="setup-title">タイマー設定</h2>
+          <button
+            id="theme-settings-button"
+            class="icon-button"
+            type="button"
+            aria-label="デザインテーマを変更"
+            aria-haspopup="dialog"
+            aria-controls="theme-sheet"
+          >⚙︎</button>
+        </div>
 
         <label class="field-label" for="focus-minutes">集中時間</label>
         <div class="minute-control">
@@ -119,6 +129,61 @@
       </div>
     </section>
   </main>
+
+  <div id="theme-overlay" class="sheet-overlay hidden" aria-hidden="true"></div>
+
+  <section
+    id="theme-sheet"
+    class="bottom-sheet hidden"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="theme-sheet-title"
+  >
+    <div class="sheet-handle" aria-hidden="true"></div>
+    <div class="sheet-header">
+      <div>
+        <p class="sheet-eyebrow">DESIGN THEME</p>
+        <h2 id="theme-sheet-title">デザインテーマ</h2>
+      </div>
+      <button id="theme-sheet-close" class="sheet-close-button" type="button" aria-label="閉じる">×</button>
+    </div>
+
+    <p class="sheet-description">お好みの色合いを選んでください。選択内容は保存されます。</p>
+
+    <div class="theme-grid" role="radiogroup" aria-label="デザインテーマ">
+      <button class="theme-option" type="button" data-theme-value="beige" role="radio" aria-checked="true">
+        <span class="theme-preview theme-preview-beige" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </span>
+        <strong>ナチュラルベージュ</strong>
+        <small>落ち着いた温かみ</small>
+      </button>
+
+      <button class="theme-option" type="button" data-theme-value="lavender" role="radio" aria-checked="false">
+        <span class="theme-preview theme-preview-lavender" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </span>
+        <strong>ラベンダー</strong>
+        <small>やさしく上品</small>
+      </button>
+
+      <button class="theme-option" type="button" data-theme-value="mint" role="radio" aria-checked="false">
+        <span class="theme-preview theme-preview-mint" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </span>
+        <strong>ミントグリーン</strong>
+        <small>清潔で穏やか</small>
+      </button>
+
+      <button class="theme-option" type="button" data-theme-value="pink" role="radio" aria-checked="false">
+        <span class="theme-preview theme-preview-pink" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </span>
+        <strong>ピンクベージュ</strong>
+        <small>柔らかく華やか</small>
+      </button>
+    </div>
+  </section>
 
   <script src="app.js"></script>
 </body>

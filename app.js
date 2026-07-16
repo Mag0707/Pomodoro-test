@@ -35,6 +35,11 @@
   const alertSoundSelect = document.getElementById("alert-sound");
   const focusSoundSelect = document.getElementById("focus-sound");
   const breakEndAlertCheckbox = document.getElementById("break-end-alert");
+  const themeSettingsButton = document.getElementById("theme-settings-button");
+  const themeSheet = document.getElementById("theme-sheet");
+  const themeOverlay = document.getElementById("theme-overlay");
+  const themeSheetClose = document.getElementById("theme-sheet-close");
+  const themeOptions = [...document.querySelectorAll(".theme-option")];
 
   const decreaseButton = document.getElementById("decrease-button");
   const increaseButton = document.getElementById("increase-button");
@@ -68,6 +73,7 @@
   let messageIndex = 0;
   let restoredFromStorage = false;
   let alertNextPhase = "break";
+  let selectedTheme = "beige";
 
   let audioContext = null;
   let activeAudioNodes = [];
@@ -459,12 +465,45 @@
     return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
   }
 
+
+  function applyTheme(theme) {
+    const validThemes = ["beige", "lavender", "mint", "pink"];
+    selectedTheme = validThemes.includes(theme) ? theme : "beige";
+
+    document.body.dataset.theme = selectedTheme;
+
+    for (const option of themeOptions) {
+      option.setAttribute(
+        "aria-checked",
+        String(option.dataset.themeValue === selectedTheme)
+      );
+    }
+  }
+
+  function openThemeSheet() {
+    leaveDimMode();
+    themeOverlay.classList.remove("hidden");
+    themeSheet.classList.remove("hidden");
+    themeOverlay.setAttribute("aria-hidden", "false");
+    document.body.classList.add("sheet-open");
+    themeSheetClose.focus();
+  }
+
+  function closeThemeSheet() {
+    themeOverlay.classList.add("hidden");
+    themeSheet.classList.add("hidden");
+    themeOverlay.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("sheet-open");
+    themeSettingsButton.focus();
+  }
+
   function saveSettings() {
     const settings = {
       focusMinutes: clampFocusMinutes(focusMinutesInput.value),
       alertSound: alertSoundSelect.value,
       focusSound: focusSoundSelect.value,
-      breakEndAlert: breakEndAlertCheckbox.checked
+      breakEndAlert: breakEndAlertCheckbox.checked,
+      theme: selectedTheme
     };
 
     localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
@@ -475,6 +514,7 @@
       const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
 
       if (!stored) {
+        applyTheme("beige");
         return;
       }
 
@@ -491,6 +531,7 @@
       }
 
       breakEndAlertCheckbox.checked = settings.breakEndAlert !== false;
+      applyTheme(settings.theme ?? "beige");
     } catch (_) {
       localStorage.removeItem(SETTINGS_STORAGE_KEY);
     }
@@ -865,6 +906,23 @@
     }
 
     scheduleDimMode();
+  });
+
+  themeSettingsButton.addEventListener("click", openThemeSheet);
+  themeSheetClose.addEventListener("click", closeThemeSheet);
+  themeOverlay.addEventListener("click", closeThemeSheet);
+
+  for (const option of themeOptions) {
+    option.addEventListener("click", () => {
+      applyTheme(option.dataset.themeValue);
+      saveSettings();
+    });
+  }
+
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && !themeSheet.classList.contains("hidden")) {
+      closeThemeSheet();
+    }
   });
 
   previewAlertButton.addEventListener("click", previewAlert);
