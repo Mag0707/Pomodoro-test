@@ -747,3 +747,15 @@ body.dim-mode .check-message {
     margin-bottom: 10px;
   }
 }
+
+
+/* 第12版：説明文はスマホ時だけ意図した位置で改行 */
+.mobile-break {
+  display: none;
+}
+
+@media (max-width: 430px) {
+  .mobile-break {
+    display: inline;
+  }
+}
