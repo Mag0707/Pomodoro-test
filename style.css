@@ -1284,3 +1284,86 @@ body[data-theme="pink"] .decor-flowers {
     left: -30px;
   }
 }
+
+
+/* 第15版：テーマごとに異なるSVG装飾 */
+.theme-decoration-set { display: none; }
+
+body:not(.dim-mode)[data-theme="beige"] .decor-beige,
+body:not(.dim-mode)[data-theme="lavender"] .decor-lavender,
+body:not(.dim-mode)[data-theme="mint"] .decor-mint,
+body:not(.dim-mode)[data-theme="pink"] .decor-pink {
+  display: block;
+}
+
+.theme-decoration-set .theme-decoration {
+  position: fixed;
+  z-index: 0;
+  width: 132px;
+  height: 132px;
+  pointer-events: none;
+  opacity: 0.72;
+}
+
+.theme-decoration-set .theme-decoration svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.theme-decoration-set .theme-decoration-top {
+  top: max(4px, env(safe-area-inset-top));
+  right: -20px;
+}
+
+.theme-decoration-set .theme-decoration-bottom {
+  left: -22px;
+  bottom: max(2px, env(safe-area-inset-bottom));
+}
+
+.twig .stem,
+.lavender-branch .stem,
+.lavender-branch .sprig,
+.round-leaves .stem {
+  fill: none;
+  stroke: var(--theme-decor);
+  stroke-width: 2.1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.twig .leaf,
+.round-leaves ellipse {
+  fill: var(--theme-decor-soft);
+  stroke: var(--theme-decor);
+  stroke-width: 1.7;
+}
+
+.lavender-branch ellipse {
+  fill: var(--theme-decor);
+  opacity: 0.88;
+}
+
+.small-flowers circle {
+  fill: var(--theme-decor);
+}
+
+.small-flowers .center {
+  fill: var(--theme-surface);
+}
+
+body.sheet-open .theme-decoration-set,
+body.dim-mode .theme-decoration-set {
+  display: none !important;
+}
+
+@media (max-width: 430px) {
+  .theme-decoration-set .theme-decoration {
+    width: 112px;
+    height: 112px;
+    opacity: 0.62;
+  }
+
+  .theme-decoration-set .theme-decoration-top { right: -28px; }
+  .theme-decoration-set .theme-decoration-bottom { left: -30px; }
+}
