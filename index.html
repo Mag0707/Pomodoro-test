@@ -10,7 +10,7 @@
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <title>過緊張チェックタイマー</title>
-  <link rel="stylesheet" href="style.css?v=22">
+  <link rel="stylesheet" href="style.css?v=23">
 </head>
 <body>
   <main class="app-shell">
@@ -49,25 +49,27 @@
           </button>
         </div>
 
-        <label class="field-label" for="focus-minutes">集中時間</label>
-        <div class="minute-control">
-          <button id="decrease-button" class="step-button" type="button" aria-label="集中時間を1分減らす">−</button>
-          <div class="minute-display">
-            <input
-              id="focus-minutes"
-              type="number"
-              min="1"
-              max="120"
-              step="1"
-              value="25"
-              inputmode="numeric"
-              aria-describedby="minute-help"
-            >
-            <span>分</span>
+        <div id="focus-minutes-group">
+          <label class="field-label" for="focus-minutes">集中時間</label>
+          <div class="minute-control">
+            <button id="decrease-button" class="step-button" type="button" aria-label="集中時間を1分減らす">−</button>
+            <div class="minute-display">
+              <input
+                id="focus-minutes"
+                type="number"
+                min="1"
+                max="120"
+                step="1"
+                value="25"
+                inputmode="numeric"
+                aria-describedby="minute-help"
+              >
+              <span>分</span>
+            </div>
+            <button id="increase-button" class="step-button" type="button" aria-label="集中時間を1分増やす">＋</button>
           </div>
-          <button id="increase-button" class="step-button" type="button" aria-label="集中時間を1分増やす">＋</button>
+          <p id="minute-help" class="help-text">1〜120分で指定できます。休憩は5分固定です。</p>
         </div>
-        <p id="minute-help" class="help-text">1〜120分で指定できます。休憩は5分固定です。</p>
 
         <div class="setting-group">
           <label class="field-label" for="alert-sound">集中終了のアラート音</label>
@@ -198,6 +200,6 @@
     </div>
   </section>
 
-  <script src="app.js?v=22"></script>
+  <script src="app.js?v=23"></script>
 </body>
 </html>
