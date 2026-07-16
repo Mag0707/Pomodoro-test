@@ -3,7 +3,7 @@
 
   const BREAK_SECONDS = 5 * 60;
   const ALERT_DURATION_MS = 2000;
-  const PREVIEW_DURATION_MS = 2200;
+  const PREVIEW_DURATION_MS = 10000;
   const DIM_MODE_DELAY_MS = 15000;
   const MESSAGE_CHANGE_MS = 30000;
   const SHIFT_CHANGE_MS = 30000;
@@ -29,6 +29,7 @@
       bell: "ベル",
       digital: "電子音",
       preview: "試聴",
+      stopPreview: "停止",
       alertHelp: "集中終了時に約2秒だけ鳴ります。",
       breakEndSameSound: "休憩終了時にも同じ音を鳴らす",
       breakEndHelp: "約2秒鳴った後、次の集中時間を始めます。",
@@ -37,7 +38,7 @@
       softTick: "小さな時計音",
       softBreeze: "やわらかな風音",
       gentleRain: "やさしい雨音",
-      cafeAmbience: "カフェのやわらかなざわめき",
+      quietStorm: "遠い雷を含まない静かな嵐",
       focusSoundHelp: "休憩中と一時停止中は必ず無音になります。",
       start: "スタート",
       pause: "一時停止",
@@ -105,6 +106,7 @@
       bell: "Bell",
       digital: "Digital Tone",
       preview: "Preview",
+      stopPreview: "Stop",
       alertHelp: "Plays for about 2 seconds when focus time ends.",
       breakEndSameSound: "Play the same sound when the break ends",
       breakEndHelp: "The next focus session starts after the 2-second alert.",
@@ -113,7 +115,7 @@
       softTick: "Soft Clock Tick",
       softBreeze: "Gentle Breeze",
       gentleRain: "Gentle Rain",
-      cafeAmbience: "Soft Café Ambience",
+      quietStorm: "Quiet Storm Without Thunder",
       focusSoundHelp: "Sound is always off during breaks and while paused.",
       start: "Start",
       pause: "Pause",
@@ -214,6 +216,7 @@
   let intervalId = null;
   let alertTimeoutId = null;
   let previewTimeoutId = null;
+  let isFocusPreviewPlaying = false;
   let phase = "focus";
   let cycle = 1;
   let isPaused = false;
@@ -534,79 +537,88 @@
     source.start();
   }
 
-  function playCafeAmbience() {
+  function playQuietStorm() {
     const context = getAudioContext();
     const masterGain = registerAudioNode(context.createGain());
-    masterGain.gain.value = 0.024;
+    masterGain.gain.value = 0.032;
     masterGain.connect(context.destination);
 
-    const layers = [
-      { low: 180, high: 720, gain: 0.34, rate: 0.075, depth: 0.12 },
-      { low: 420, high: 1450, gain: 0.22, rate: 0.11, depth: 0.09 },
-      { low: 900, high: 2600, gain: 0.08, rate: 0.055, depth: 0.05 }
-    ];
+    const rainSource = registerAudioNode(context.createBufferSource());
+    const rainHighpass = registerAudioNode(context.createBiquadFilter());
+    const rainLowpass = registerAudioNode(context.createBiquadFilter());
+    const rainGain = registerAudioNode(context.createGain());
+    const rainLfo = registerAudioNode(context.createOscillator());
+    const rainLfoGain = registerAudioNode(context.createGain());
 
-    for (const layer of layers) {
-      const source = registerAudioNode(context.createBufferSource());
-      const highpass = registerAudioNode(context.createBiquadFilter());
-      const lowpass = registerAudioNode(context.createBiquadFilter());
-      const layerGain = registerAudioNode(context.createGain());
-      const lfo = registerAudioNode(context.createOscillator());
-      const lfoGain = registerAudioNode(context.createGain());
+    rainSource.buffer = createNoiseBuffer(8);
+    rainSource.loop = true;
+    rainHighpass.type = "highpass";
+    rainHighpass.frequency.value = 900;
+    rainHighpass.Q.value = 0.35;
+    rainLowpass.type = "lowpass";
+    rainLowpass.frequency.value = 6800;
+    rainLowpass.Q.value = 0.4;
+    rainGain.gain.value = 0.52;
 
-      source.buffer = createNoiseBuffer(8);
-      source.loop = true;
+    rainLfo.type = "sine";
+    rainLfo.frequency.value = 0.08;
+    rainLfoGain.gain.value = 0.09;
+    rainLfo.connect(rainLfoGain);
+    rainLfoGain.connect(rainGain.gain);
 
-      highpass.type = "highpass";
-      highpass.frequency.value = layer.low;
-      highpass.Q.value = 0.45;
+    rainSource.connect(rainHighpass);
+    rainHighpass.connect(rainLowpass);
+    rainLowpass.connect(rainGain);
+    rainGain.connect(masterGain);
 
-      lowpass.type = "lowpass";
-      lowpass.frequency.value = layer.high;
-      lowpass.Q.value = 0.55;
+    const windSource = registerAudioNode(context.createBufferSource());
+    const windHighpass = registerAudioNode(context.createBiquadFilter());
+    const windLowpass = registerAudioNode(context.createBiquadFilter());
+    const windGain = registerAudioNode(context.createGain());
+    const windLfo = registerAudioNode(context.createOscillator());
+    const windLfoGain = registerAudioNode(context.createGain());
 
-      layerGain.gain.value = layer.gain;
+    windSource.buffer = createNoiseBuffer(10);
+    windSource.loop = true;
+    windHighpass.type = "highpass";
+    windHighpass.frequency.value = 55;
+    windHighpass.Q.value = 0.35;
+    windLowpass.type = "lowpass";
+    windLowpass.frequency.value = 720;
+    windLowpass.Q.value = 0.5;
+    windGain.gain.value = 0.22;
 
-      lfo.type = "sine";
-      lfo.frequency.value = layer.rate;
-      lfoGain.gain.value = layer.depth;
-      lfo.connect(lfoGain);
-      lfoGain.connect(layerGain.gain);
+    windLfo.type = "sine";
+    windLfo.frequency.value = 0.035;
+    windLfoGain.gain.value = 0.12;
+    windLfo.connect(windLfoGain);
+    windLfoGain.connect(windGain.gain);
 
-      source.connect(highpass);
-      highpass.connect(lowpass);
-      lowpass.connect(layerGain);
-      layerGain.connect(masterGain);
+    windSource.connect(windHighpass);
+    windHighpass.connect(windLowpass);
+    windLowpass.connect(windGain);
+    windGain.connect(masterGain);
 
-      source.start();
-      lfo.start();
-    }
+    const distantRainSource = registerAudioNode(context.createBufferSource());
+    const distantRainLowpass = registerAudioNode(context.createBiquadFilter());
+    const distantRainGain = registerAudioNode(context.createGain());
 
-    // Very soft, irregular clink-like tones add a café impression without
-    // using external sound files.
-    const scheduleClink = () => {
-      if (!activeAudioNodes.length) {
-        return;
-      }
+    distantRainSource.buffer = createNoiseBuffer(9);
+    distantRainSource.loop = true;
+    distantRainLowpass.type = "lowpass";
+    distantRainLowpass.frequency.value = 1900;
+    distantRainLowpass.Q.value = 0.3;
+    distantRainGain.gain.value = 0.12;
 
-      const delay = 5500 + Math.random() * 8500;
-      window.setTimeout(() => {
-        if (focusSoundSelect.value !== "cafe-ambience" || phase !== "focus" || isPaused) {
-          return;
-        }
+    distantRainSource.connect(distantRainLowpass);
+    distantRainLowpass.connect(distantRainGain);
+    distantRainGain.connect(masterGain);
 
-        const base = 1180 + Math.random() * 360;
-        playTone(base, 0.045, {
-          type: "sine",
-          volume: 0.006,
-          attack: 0.003,
-          release: 0.035
-        });
-        scheduleClink();
-      }, delay);
-    };
-
-    scheduleClink();
+    rainSource.start();
+    rainLfo.start();
+    windSource.start();
+    windLfo.start();
+    distantRainSource.start();
   }
 
   function playSoftTickOnce() {
@@ -641,8 +653,8 @@
       return;
     }
 
-    if (type === "cafe-ambience") {
-      playCafeAmbience();
+    if (type === "quiet-storm") {
+      playQuietStorm();
     }
   }
 
@@ -650,6 +662,12 @@
     if (previewTimeoutId !== null) {
       window.clearTimeout(previewTimeoutId);
       previewTimeoutId = null;
+    }
+
+    if (isFocusPreviewPlaying) {
+      isFocusPreviewPlaying = false;
+      previewFocusButton.textContent = t("preview");
+      previewFocusButton.setAttribute("aria-pressed", "false");
     }
   }
 
@@ -664,12 +682,26 @@
   }
 
   function previewFocus() {
+    if (isFocusPreviewPlaying) {
+      stopPreviewTimer();
+      stopAllAudio();
+      return;
+    }
+
     stopPreviewTimer();
+    stopAllAudio();
     startFocusSound(focusSoundSelect.value);
+
+    isFocusPreviewPlaying = true;
+    previewFocusButton.textContent = t("stopPreview");
+    previewFocusButton.setAttribute("aria-pressed", "true");
 
     previewTimeoutId = window.setTimeout(() => {
       stopAllAudio();
       previewTimeoutId = null;
+      isFocusPreviewPlaying = false;
+      previewFocusButton.textContent = t("preview");
+      previewFocusButton.setAttribute("aria-pressed", "false");
     }, PREVIEW_DURATION_MS);
   }
 
@@ -721,6 +753,9 @@
 
     document.body.classList.toggle("language-en", selectedLanguage === "en");
     document.title = t("appTitle");
+    if (isFocusPreviewPlaying) {
+      previewFocusButton.textContent = t("stopPreview");
+    }
 
     if (shouldRefreshDisplay) {
       updateDisplay();
@@ -1158,7 +1193,11 @@
   });
 
   alertSoundSelect.addEventListener("change", saveSettings);
-  focusSoundSelect.addEventListener("change", saveSettings);
+  focusSoundSelect.addEventListener("change", () => {
+    stopPreviewTimer();
+    stopAllAudio();
+    saveSettings();
+  });
   breakEndAlertCheckbox.addEventListener("change", saveSettings);
 
   timerCard.addEventListener("click", event => {
