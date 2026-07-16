@@ -49,14 +49,14 @@
       designTheme: "デザインテーマ",
       close: "閉じる",
       themeDescription: "お好みの色合いを選んでください。選択内容は保存されます。",
-      naturalBeige: "ナチュラルベージュ",
-      naturalBeigeDesc: "落ち着いた温かみ",
+      skyBlue: "スカイブルー",
+      skyBlueDesc: "澄んだやさしい青",
       lavender: "ラベンダー",
       lavenderDesc: "やさしく上品",
       mintGreen: "ミントグリーン",
       mintDesc: "清潔で穏やか",
-      pinkBeige: "ピンクベージュ",
-      pinkDesc: "柔らかく華やか",
+      darkTheme: "ダーク",
+      darkThemeDesc: "目にやさしい深い色",
       languageEyebrow: "LANGUAGE",
       displayLanguage: "表示言語",
       languageNote: "選択した言語は次回も保持されます。",
@@ -126,14 +126,14 @@
       designTheme: "Design Theme",
       close: "Close",
       themeDescription: "Choose a color palette. Your selection will be saved.",
-      naturalBeige: "Natural Beige",
-      naturalBeigeDesc: "Calm and warm",
+      skyBlue: "Sky Blue",
+      skyBlueDesc: "Clear and gentle",
       lavender: "Lavender",
       lavenderDesc: "Soft and elegant",
       mintGreen: "Mint Green",
       mintDesc: "Fresh and soothing",
-      pinkBeige: "Pink Beige",
-      pinkDesc: "Soft and graceful",
+      darkTheme: "Dark",
+      darkThemeDesc: "Deep and easy on the eyes",
       languageEyebrow: "LANGUAGE",
       displayLanguage: "Display Language",
       languageNote: "Your language choice will be saved for next time.",
@@ -223,7 +223,7 @@
   let messageIndex = 0;
   let restoredFromStorage = false;
   let alertNextPhase = "break";
-  let selectedTheme = "beige";
+  let selectedTheme = "sky";
   let selectedLanguage = "ja";
 
   let audioContext = null;
@@ -764,8 +764,11 @@
   }
 
   function applyTheme(theme) {
-    const validThemes = ["beige", "lavender", "mint", "pink"];
-    selectedTheme = validThemes.includes(theme) ? theme : "beige";
+    const migratedTheme = theme === "beige"
+      ? "sky"
+      : (theme === "pink" ? "dark" : theme);
+    const validThemes = ["sky", "lavender", "mint", "dark"];
+    selectedTheme = validThemes.includes(migratedTheme) ? migratedTheme : "sky";
 
     document.body.dataset.theme = selectedTheme;
 
@@ -812,7 +815,7 @@
       const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
 
       if (!stored) {
-        applyTheme("beige");
+        applyTheme("sky");
         applyLanguage("ja", false);
         return;
       }
@@ -830,7 +833,7 @@
       }
 
       breakEndAlertCheckbox.checked = settings.breakEndAlert !== false;
-      applyTheme(settings.theme ?? "beige");
+      applyTheme(settings.theme ?? "sky");
       applyLanguage(settings.language ?? "ja", false);
     } catch (_) {
       localStorage.removeItem(SETTINGS_STORAGE_KEY);

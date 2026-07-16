@@ -1929,3 +1929,98 @@ body.language-en #setup-screen .card {
     padding-bottom: 14px;
   }
 }
+
+
+/* 第28版：ナチュラルベージュをスカイブルーへ、ピンクベージュをダークへ置換 */
+
+/* スカイブルーを標準テーマとして使用 */
+:root,
+body[data-theme="sky"] {
+  --theme-bg-top: #f8fcff;
+  --theme-bg-bottom: #e6f2ff;
+  --theme-surface: #fbfdff;
+  --theme-surface-soft: #eef7ff;
+  --theme-border: #cfe5f8;
+  --theme-accent: #5ba7e6;
+  --theme-accent-strong: #2d72b8;
+  --theme-accent-soft: #dceeff;
+  --theme-title: #245f96;
+  --theme-text: #30475b;
+  --theme-muted: #6b8092;
+  --theme-shadow: rgba(45, 114, 184, 0.12);
+  --theme-decor: #8dc4ef;
+  --theme-decor-soft: #d7ecfb;
+}
+
+body[data-theme="dark"] {
+  --theme-bg-top: #1b1e24;
+  --theme-bg-bottom: #252a33;
+  --theme-surface: #252a33;
+  --theme-surface-soft: #2e353f;
+  --theme-border: #46515e;
+  --theme-accent: #4dd0c5;
+  --theme-accent-strong: #2ea69d;
+  --theme-accent-soft: #263f42;
+  --theme-title: #f1f5f7;
+  --theme-text: #e4e9ec;
+  --theme-muted: #aeb9c1;
+  --theme-shadow: rgba(0, 0, 0, 0.26);
+  --theme-decor: #4dd0c5;
+  --theme-decor-soft: #31565a;
+  color-scheme: dark;
+}
+
+.theme-preview-sky {
+  background: #e6f2ff !important;
+}
+.theme-preview-sky span {
+  background: #5ba7e6 !important;
+}
+
+.theme-preview-dark {
+  background: #1b1e24 !important;
+  border-color: #46515e !important;
+}
+.theme-preview-dark span {
+  background: #4dd0c5 !important;
+}
+
+body[data-theme="dark"]:not(.dim-mode) select,
+body[data-theme="dark"]:not(.dim-mode) input,
+body[data-theme="dark"]:not(.dim-mode) .secondary-button,
+body[data-theme="dark"]:not(.dim-mode) .language-option,
+body[data-theme="dark"]:not(.dim-mode) .theme-option {
+  color: var(--theme-text);
+  background: var(--theme-surface);
+  border-color: var(--theme-border);
+}
+
+body[data-theme="dark"]:not(.dim-mode) .bottom-sheet {
+  background: #20252c;
+  color: var(--theme-text);
+}
+
+body[data-theme="dark"]:not(.dim-mode) .sheet-description,
+body[data-theme="dark"]:not(.dim-mode) .language-note,
+body[data-theme="dark"]:not(.dim-mode) .theme-option small {
+  color: var(--theme-muted);
+}
+
+body[data-theme="dark"]:not(.dim-mode) .sheet-close-button,
+body[data-theme="dark"]:not(.dim-mode) .icon-button {
+  color: var(--theme-title);
+}
+
+body[data-theme="dark"]:not(.dim-mode) .language-option[aria-checked="true"] {
+  background: var(--theme-accent-soft);
+  color: #8fe8e1;
+  border-color: var(--theme-accent);
+}
+
+/* 旧テーマ用の装飾指定を無効化 */
+body[data-theme="sky"] .decor-flowers,
+body[data-theme="sky"] .decor-leaves,
+body[data-theme="dark"] .decor-flowers,
+body[data-theme="dark"] .decor-leaves {
+  opacity: 0;
+}
