@@ -37,6 +37,7 @@
       softTick: "小さな時計音",
       softBreeze: "やわらかな風音",
       gentleRain: "やさしい雨音",
+      cafeAmbience: "カフェのやわらかなざわめき",
       focusSoundHelp: "休憩中と一時停止中は必ず無音になります。",
       start: "スタート",
       pause: "一時停止",
@@ -112,6 +113,7 @@
       softTick: "Soft Clock Tick",
       softBreeze: "Gentle Breeze",
       gentleRain: "Gentle Rain",
+      cafeAmbience: "Soft Café Ambience",
       focusSoundHelp: "Sound is always off during breaks and while paused.",
       start: "Start",
       pause: "Pause",
@@ -532,6 +534,81 @@
     source.start();
   }
 
+  function playCafeAmbience() {
+    const context = getAudioContext();
+    const masterGain = registerAudioNode(context.createGain());
+    masterGain.gain.value = 0.024;
+    masterGain.connect(context.destination);
+
+    const layers = [
+      { low: 180, high: 720, gain: 0.34, rate: 0.075, depth: 0.12 },
+      { low: 420, high: 1450, gain: 0.22, rate: 0.11, depth: 0.09 },
+      { low: 900, high: 2600, gain: 0.08, rate: 0.055, depth: 0.05 }
+    ];
+
+    for (const layer of layers) {
+      const source = registerAudioNode(context.createBufferSource());
+      const highpass = registerAudioNode(context.createBiquadFilter());
+      const lowpass = registerAudioNode(context.createBiquadFilter());
+      const layerGain = registerAudioNode(context.createGain());
+      const lfo = registerAudioNode(context.createOscillator());
+      const lfoGain = registerAudioNode(context.createGain());
+
+      source.buffer = createNoiseBuffer(8);
+      source.loop = true;
+
+      highpass.type = "highpass";
+      highpass.frequency.value = layer.low;
+      highpass.Q.value = 0.45;
+
+      lowpass.type = "lowpass";
+      lowpass.frequency.value = layer.high;
+      lowpass.Q.value = 0.55;
+
+      layerGain.gain.value = layer.gain;
+
+      lfo.type = "sine";
+      lfo.frequency.value = layer.rate;
+      lfoGain.gain.value = layer.depth;
+      lfo.connect(lfoGain);
+      lfoGain.connect(layerGain.gain);
+
+      source.connect(highpass);
+      highpass.connect(lowpass);
+      lowpass.connect(layerGain);
+      layerGain.connect(masterGain);
+
+      source.start();
+      lfo.start();
+    }
+
+    // Very soft, irregular clink-like tones add a café impression without
+    // using external sound files.
+    const scheduleClink = () => {
+      if (!activeAudioNodes.length) {
+        return;
+      }
+
+      const delay = 5500 + Math.random() * 8500;
+      window.setTimeout(() => {
+        if (focusSoundSelect.value !== "cafe-ambience" || phase !== "focus" || isPaused) {
+          return;
+        }
+
+        const base = 1180 + Math.random() * 360;
+        playTone(base, 0.045, {
+          type: "sine",
+          volume: 0.006,
+          attack: 0.003,
+          release: 0.035
+        });
+        scheduleClink();
+      }, delay);
+    };
+
+    scheduleClink();
+  }
+
   function playSoftTickOnce() {
     playTone(1200, 0.035, {
       type: "sine",
@@ -561,6 +638,11 @@
 
     if (type === "gentle-rain") {
       playGentleRain();
+      return;
+    }
+
+    if (type === "cafe-ambience") {
+      playCafeAmbience();
     }
   }
 
