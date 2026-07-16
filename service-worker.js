@@ -1,4 +1,4 @@
-const CACHE_NAME = "tension-check-timer-v20";
+const CACHE_NAME = "tension-check-timer-v21";
 
 const APP_FILES = [
   "./",
