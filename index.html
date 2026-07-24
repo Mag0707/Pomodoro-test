@@ -8,9 +8,12 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="過緊張タイマー">
   <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&display=swap" rel="stylesheet">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <title>過緊張チェックタイマー</title>
-  <link rel="stylesheet" href="style.css?v=29">
+  <link rel="stylesheet" href="style.css?v=30">
 </head>
 <body>
   <main class="app-shell">
@@ -123,22 +126,22 @@
           前回のタイマーを復元しました。スタートを押すと再開します。
         </p>
 
-        <div id="running-controls" class="button-stack">
-          <button id="pause-button" class="primary-button" type="button" data-i18n="pause">一時停止</button>
-        </div>
-
-        <div id="paused-controls" class="button-stack hidden">
-          <button id="resume-button" class="primary-button" type="button" data-i18n="start">スタート</button>
-          <button id="reset-button" class="secondary-button" type="button" data-i18n="reset">リセット</button>
-        </div>
-
-        <div id="alert-controls" class="alert-note hidden" role="status">
-          次の時間をまもなく開始します
-        </div>
-
         <p id="dim-mode-hint" class="dim-mode-hint hidden" data-i18n="dimHint">
           画面をタップすると通常表示に戻ります
         </p>
+      </div>
+
+      <div id="running-controls" class="button-stack timer-controls">
+        <button id="pause-button" class="primary-button timer-action-button" type="button" data-i18n="pause">一時停止</button>
+      </div>
+
+      <div id="paused-controls" class="button-stack timer-controls hidden">
+        <button id="resume-button" class="primary-button timer-action-button" type="button" data-i18n="start">スタート</button>
+        <button id="reset-button" class="secondary-button timer-action-button" type="button" data-i18n="reset">リセット</button>
+      </div>
+
+      <div id="alert-controls" class="alert-note timer-alert-note hidden" role="status">
+        次の時間をまもなく開始します
       </div>
     </section>
   </main>
@@ -210,6 +213,6 @@
     </div>
   </section>
 
-  <script src="app.js?v=29"></script>
+  <script src="app.js?v=30"></script>
 </body>
 </html>
