@@ -2173,3 +2173,107 @@ body[data-theme="mint"] {
     padding-inline: 24px;
   }
 }
+
+
+/* 第32版：大人かわいい4テーマへ刷新 */
+
+/* 1. パウダースカイ（初期値） */
+:root,
+body[data-theme="powder-sky"] {
+  --theme-bg-top: #ffffff;
+  --theme-bg-bottom: #dfeaf5;
+  --theme-surface: #fbfdff;
+  --theme-surface-soft: #f1f6fb;
+  --theme-border: #d6e0eb;
+  --theme-accent: #92afcd;
+  --theme-accent-strong: #617f9f;
+  --theme-accent-soft: #e5eef7;
+  --theme-title: #5c7692;
+  --theme-text: #3f4b59;
+  --theme-muted: #7b8793;
+  --theme-shadow: rgba(91, 119, 148, 0.12);
+  --theme-decor: #a9bed4;
+  --theme-decor-soft: #e5edf5;
+}
+
+/* 2. ミスティラベンダー */
+body[data-theme="misty-lavender"] {
+  --theme-bg-top: #ffffff;
+  --theme-bg-bottom: #eee9f3;
+  --theme-surface: #fdfcff;
+  --theme-surface-soft: #f6f2f9;
+  --theme-border: #ddd4e4;
+  --theme-accent: #aa96b7;
+  --theme-accent-strong: #7b6689;
+  --theme-accent-soft: #ebe4f0;
+  --theme-title: #74647f;
+  --theme-text: #4e4654;
+  --theme-muted: #857c8c;
+  --theme-shadow: rgba(112, 91, 124, 0.12);
+  --theme-decor: #bcaec6;
+  --theme-decor-soft: #ece6f0;
+}
+
+/* 3. セージグレージュ */
+body[data-theme="sage-greige"] {
+  --theme-bg-top: #ffffff;
+  --theme-bg-bottom: #ecebe5;
+  --theme-surface: #fdfcf9;
+  --theme-surface-soft: #f4f3ee;
+  --theme-border: #d9d7cf;
+  --theme-accent: #9ba187;
+  --theme-accent-strong: #737961;
+  --theme-accent-soft: #e6e8dc;
+  --theme-title: #6e735e;
+  --theme-text: #4d5048;
+  --theme-muted: #85877f;
+  --theme-shadow: rgba(102, 105, 89, 0.12);
+  --theme-decor: #b4b8a1;
+  --theme-decor-soft: #eceee5;
+}
+
+/* 4. スモーキーローズ */
+body[data-theme="smoky-rose"] {
+  --theme-bg-top: #ffffff;
+  --theme-bg-bottom: #f3e8e7;
+  --theme-surface: #fffdfd;
+  --theme-surface-soft: #f9f1f0;
+  --theme-border: #ead7d5;
+  --theme-accent: #c98583;
+  --theme-accent-strong: #9f605f;
+  --theme-accent-soft: #f2dddd;
+  --theme-title: #97615f;
+  --theme-text: #554544;
+  --theme-muted: #887775;
+  --theme-shadow: rgba(143, 83, 81, 0.12);
+  --theme-decor: #d6a3a1;
+  --theme-decor-soft: #f1e2e1;
+}
+
+.theme-preview-powder-sky {
+  background: #e6eef6 !important;
+}
+.theme-preview-powder-sky span {
+  background: #92afcd !important;
+}
+
+.theme-preview-misty-lavender {
+  background: #eee9f3 !important;
+}
+.theme-preview-misty-lavender span {
+  background: #aa96b7 !important;
+}
+
+.theme-preview-sage-greige {
+  background: #ecebe5 !important;
+}
+.theme-preview-sage-greige span {
+  background: #9ba187 !important;
+}
+
+.theme-preview-smoky-rose {
+  background: #f3e8e7 !important;
+}
+.theme-preview-smoky-rose span {
+  background: #c98583 !important;
+}

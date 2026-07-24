@@ -5,6 +5,12 @@
 ### 概要
 集中しすぎによる身体の緊張に気づき、定期的に力を抜くきっかけを作るための個人用タイマーです。
 
+### カラーテーマ
+- パウダースカイ（初期値）
+- ミスティラベンダー
+- セージグレージュ
+- スモーキーローズ
+
 ### フォントクレジット
 - Klee One
 - 提供: Fontworks Inc.
@@ -36,6 +42,12 @@ sounds/
 
 ### Overview
 A personal timer designed to help notice physical tension caused by over-focusing and create regular opportunities to relax.
+
+### Color Themes
+- Powder Sky (default)
+- Misty Lavender
+- Sage Greige
+- Smoky Rose
 
 ### Font Credit
 - Klee One

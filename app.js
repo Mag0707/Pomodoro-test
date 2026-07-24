@@ -50,14 +50,14 @@
       designTheme: "デザインテーマ",
       close: "閉じる",
       themeDescription: "お好みの色合いを選んでください。選択内容は保存されます。",
-      skyBlue: "スカイブルー",
-      skyBlueDesc: "澄んだやさしい青",
-      lavender: "ラベンダー",
-      lavenderDesc: "やさしく上品",
-      mintGreen: "ミントグリーン",
-      mintDesc: "清潔で穏やか",
-      darkTheme: "ダーク",
-      darkThemeDesc: "目にやさしい深い色",
+      powderSky: "パウダースカイ",
+      powderSkyDesc: "清潔感のある静かな青",
+      mistyLavender: "ミスティラベンダー",
+      mistyLavenderDesc: "静かで知的な紫",
+      sageGreige: "セージグレージュ",
+      sageGreigeDesc: "落ち着いた自然色",
+      smokyRose: "スモーキーローズ",
+      smokyRoseDesc: "大人かわいい上品な赤",
       languageEyebrow: "LANGUAGE",
       displayLanguage: "表示言語",
       languageNote: "選択した言語は次回も保持されます。",
@@ -128,14 +128,14 @@
       designTheme: "Design Theme",
       close: "Close",
       themeDescription: "Choose a color palette. Your selection will be saved.",
-      skyBlue: "Sky Blue",
-      skyBlueDesc: "Clear and gentle",
-      lavender: "Lavender",
-      lavenderDesc: "Soft and elegant",
-      mintGreen: "Mint Green",
-      mintDesc: "Fresh and soothing",
-      darkTheme: "Dark",
-      darkThemeDesc: "Deep and easy on the eyes",
+      powderSky: "Powder Sky",
+      powderSkyDesc: "Clean and quietly refined",
+      mistyLavender: "Misty Lavender",
+      mistyLavenderDesc: "Calm and sophisticated",
+      sageGreige: "Sage Greige",
+      sageGreigeDesc: "Natural and understated",
+      smokyRose: "Smoky Rose",
+      smokyRoseDesc: "Mature, soft, and elegant",
       languageEyebrow: "LANGUAGE",
       displayLanguage: "Display Language",
       languageNote: "Your language choice will be saved for next time.",
@@ -225,7 +225,7 @@
   let messageIndex = 0;
   let restoredFromStorage = false;
   let alertNextPhase = "break";
-  let selectedTheme = "sky";
+  let selectedTheme = "powder-sky";
   let selectedLanguage = "ja";
 
   let audioContext = null;
@@ -771,11 +771,26 @@
   }
 
   function applyTheme(theme) {
-    const migratedTheme = theme === "beige"
-      ? "sky"
-      : (theme === "pink" ? "dark" : theme);
-    const validThemes = ["sky", "lavender", "mint", "dark"];
-    selectedTheme = validThemes.includes(migratedTheme) ? migratedTheme : "sky";
+    const themeMigrationMap = {
+      beige: "powder-sky",
+      sky: "powder-sky",
+      lavender: "misty-lavender",
+      mint: "sage-greige",
+      pink: "smoky-rose",
+      dark: "smoky-rose"
+    };
+
+    const migratedTheme = themeMigrationMap[theme] ?? theme;
+    const validThemes = [
+      "powder-sky",
+      "misty-lavender",
+      "sage-greige",
+      "smoky-rose"
+    ];
+
+    selectedTheme = validThemes.includes(migratedTheme)
+      ? migratedTheme
+      : "powder-sky";
 
     document.body.dataset.theme = selectedTheme;
 
@@ -822,7 +837,7 @@
       const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
 
       if (!stored) {
-        applyTheme("sky");
+        applyTheme("powder-sky");
         applyLanguage("ja", false);
         return;
       }
@@ -844,7 +859,7 @@
       }
 
       breakEndAlertCheckbox.checked = settings.breakEndAlert !== false;
-      applyTheme(settings.theme ?? "sky");
+      applyTheme(settings.theme ?? "powder-sky");
       applyLanguage(settings.language ?? "ja", false);
     } catch (_) {
       localStorage.removeItem(SETTINGS_STORAGE_KEY);
