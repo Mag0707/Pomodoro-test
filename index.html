@@ -10,7 +10,7 @@
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <title>過緊張チェックタイマー</title>
-  <link rel="stylesheet" href="style.css?v=28">
+  <link rel="stylesheet" href="style.css?v=29">
 </head>
 <body>
   <main class="app-shell">
@@ -97,11 +97,8 @@
           <label class="field-label" for="focus-sound" data-i18n="focusSound">集中中の音</label>
           <div class="sound-row">
             <select id="focus-sound">
-              <option value="none" data-i18n="silent">無音</option>
-              <option value="soft-tick" data-i18n="softTick">小さな時計音</option>
-              <option value="soft-breeze" data-i18n="softBreeze">やわらかな風音</option>
-              <option value="gentle-rain" data-i18n="gentleRain">やさしい雨音</option>
-              <option value="quiet-storm" data-i18n="quietStorm">遠い雷を含まない静かな嵐</option>
+              <option value="gentle-rain-file" data-i18n="gentleRain">やさしい雨</option>
+              <option value="cafe-file" data-i18n="cafeAmbience">カフェの環境音</option>
             </select>
             <button id="preview-focus-button" class="preview-button" type="button" data-i18n="preview">試聴</button>
           </div>
@@ -213,6 +210,6 @@
     </div>
   </section>
 
-  <script src="app.js?v=28"></script>
+  <script src="app.js?v=29"></script>
 </body>
 </html>

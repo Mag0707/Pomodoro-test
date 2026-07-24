@@ -37,7 +37,8 @@
       silent: "無音",
       softTick: "小さな時計音",
       softBreeze: "やわらかな風音",
-      gentleRain: "やさしい雨音",
+      gentleRain: "やさしい雨",
+      cafeAmbience: "カフェの環境音",
       quietStorm: "遠い雷を含まない静かな嵐",
       focusSoundHelp: "休憩中と一時停止中は必ず無音になります。",
       start: "スタート",
@@ -115,6 +116,7 @@
       softTick: "Soft Clock Tick",
       softBreeze: "Gentle Breeze",
       gentleRain: "Gentle Rain",
+      cafeAmbience: "Café Ambience",
       quietStorm: "Quiet Storm Without Thunder",
       focusSoundHelp: "Sound is always off during breaks and while paused.",
       start: "Start",
@@ -227,6 +229,7 @@
   let selectedLanguage = "ja";
 
   let audioContext = null;
+  let focusAudio = null;
   let activeAudioNodes = [];
   let focusTickIntervalId = null;
   let wakeLock = null;
@@ -406,6 +409,12 @@
   }
 
   function stopAllAudio() {
+    if (focusAudio) {
+      focusAudio.pause();
+      focusAudio.currentTime = 0;
+      focusAudio = null;
+    }
+
     if (focusTickIntervalId !== null) {
       window.clearInterval(focusTickIntervalId);
       focusTickIntervalId = null;
@@ -630,32 +639,30 @@
     });
   }
 
-  function startFocusSound(type) {
+  function playFocusAudioFile(sourcePath) {
     stopAllAudio();
 
-    if (type === "none") {
+    focusAudio = new Audio(sourcePath);
+    focusAudio.loop = true;
+    focusAudio.preload = "auto";
+    focusAudio.volume = 0.28;
+
+    const playPromise = focusAudio.play();
+
+    if (playPromise && typeof playPromise.catch === "function") {
+      playPromise.catch(() => {
+        focusAudio = null;
+      });
+    }
+  }
+
+  function startFocusSound(type) {
+    if (type === "cafe-file") {
+      playFocusAudioFile("sounds/pwlpl-busy-coffee-shop-ambiance-with-crowd-chatter-481151.mp3");
       return;
     }
 
-    if (type === "soft-tick") {
-      playSoftTickOnce();
-      focusTickIntervalId = window.setInterval(playSoftTickOnce, 1000);
-      return;
-    }
-
-    if (type === "soft-breeze") {
-      playSoftBreeze();
-      return;
-    }
-
-    if (type === "gentle-rain") {
-      playGentleRain();
-      return;
-    }
-
-    if (type === "quiet-storm") {
-      playQuietStorm();
-    }
+    playFocusAudioFile("sounds/dragon-studio-gentle-midday-rain-499668.mp3");
   }
 
   function stopPreviewTimer() {
@@ -828,8 +835,12 @@
         alertSoundSelect.value = settings.alertSound;
       }
 
-      if ([...focusSoundSelect.options].some(option => option.value === settings.focusSound)) {
-        focusSoundSelect.value = settings.focusSound;
+      const savedFocusSound = settings.focusSound === "cafe-file"
+        ? "cafe-file"
+        : "gentle-rain-file";
+
+      if ([...focusSoundSelect.options].some(option => option.value === savedFocusSound)) {
+        focusSoundSelect.value = savedFocusSound;
       }
 
       breakEndAlertCheckbox.checked = settings.breakEndAlert !== false;
