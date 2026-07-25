@@ -81,6 +81,9 @@ sounds/
 
 「今回は記録しない」を選んだ場合は、回答データは保存されません。設定画面の「記録を削除」では、確認メッセージの後に端末内の全履歴を削除します。
 
+### 休憩中の回答動作
+身体チェックの質問が表示されている間も、5分間の休憩カウントは進みます。休憩時間内に回答されなかった場合は、自動的に「今回は記録しない」として扱い、回答データを保存せず次の集中時間へ移ります。
+
 ### エクスポート項目
 
 | 項目 | 説明 |
@@ -109,6 +112,9 @@ CSVは表計算ソフトやChatGPTでの集計・分析に向いています。J
 After each focus session, one randomly selected question asks about a specific physical sign. Answers are stored in this device's `localStorage` and can be exported as CSV or JSON from the settings screen.
 
 Selecting “Do not record this time” does not save a response. The “Delete Records” button removes all locally stored history after a confirmation message.
+
+### Answering During the Break
+The five-minute break countdown continues while the body-check question is displayed. If no answer is selected before the break ends, the app automatically treats it as “Do not record this time,” saves no response data, and moves to the next focus session.
 
 ### Export Fields
 

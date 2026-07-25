@@ -272,7 +272,6 @@
   let selectedLanguage = "ja";
   let pendingBodyCheck = null;
   let pendingBodyCheckStartedAt = null;
-  let continueAfterBodyCheck = null;
 
   let audioContext = null;
   let focusAudio = null;
@@ -422,12 +421,6 @@
     document.body.classList.remove("body-check-open");
     pendingBodyCheck = null;
     pendingBodyCheckStartedAt = null;
-
-    const continuation = continueAfterBodyCheck;
-    continueAfterBodyCheck = null;
-    if (typeof continuation === "function") {
-      continuation();
-    }
   }
 
   function recordBodyCheck(answer) {
@@ -459,12 +452,10 @@
     closeBodyCheck();
   }
 
-  function showBodyCheck(onComplete) {
+  function showBodyCheck() {
     const randomIndex = Math.floor(Math.random() * BODY_CHECK_QUESTIONS.length);
     pendingBodyCheck = BODY_CHECK_QUESTIONS[randomIndex];
     pendingBodyCheckStartedAt = Date.now();
-    continueAfterBodyCheck = onComplete;
-
     const localizedQuestion = pendingBodyCheck[selectedLanguage];
     bodyCheckInstruction.textContent = localizedQuestion.instruction;
     bodyCheckQuestion.textContent = localizedQuestion.question;
@@ -1412,6 +1403,10 @@
       return;
     }
 
+    if (!bodyCheckOverlay.classList.contains("hidden")) {
+      closeBodyCheck();
+    }
+
     if (breakEndAlertCheckbox.checked) {
       beginAlert("focus");
       return;
@@ -1442,10 +1437,9 @@
       alertTimeoutId = null;
 
       if (alertNextPhase === "break") {
-        showBodyCheck(() => {
-          phase = "break";
-          beginCountdown(BREAK_SECONDS);
-        });
+        phase = "break";
+        beginCountdown(BREAK_SECONDS);
+        showBodyCheck();
         return;
       }
 
@@ -1504,6 +1498,10 @@
   }
 
   function resetTimer() {
+    if (!bodyCheckOverlay.classList.contains("hidden")) {
+      closeBodyCheck();
+    }
+
     stopInterval();
     stopAlertTimeout();
     stopPreviewTimer();
