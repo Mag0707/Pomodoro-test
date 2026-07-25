@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&display=swap" rel="stylesheet">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <title>過緊張チェックタイマー</title>
-  <link rel="stylesheet" href="style.css?v=32">
+  <link rel="stylesheet" href="style.css?v=33">
 </head>
 <body>
   <main class="app-shell">
@@ -211,8 +211,33 @@
       </div>
       <p class="language-note" data-i18n="languageNote">選択した言語は次回も保持されます。</p>
     </div>
+
+    <div class="history-settings">
+      <div class="history-heading">
+        <p class="sheet-eyebrow" data-i18n="historyEyebrow">BODY CHECK DATA</p>
+        <h3 data-i18n="historyTitle">身体チェックの記録</h3>
+      </div>
+      <p id="history-count" class="history-count">保存済み：0件</p>
+      <div class="history-export-buttons">
+        <button id="export-csv-button" class="history-button" type="button" data-i18n="exportCsv">CSVでエクスポート</button>
+        <button id="export-json-button" class="history-button" type="button" data-i18n="exportJson">JSONでエクスポート</button>
+      </div>
+      <button id="delete-history-button" class="history-button danger-button" type="button" data-i18n="deleteHistory">記録を削除</button>
+      <p class="language-note" data-i18n="historyNote">記録はこの端末内にのみ保存されます。</p>
+    </div>
   </section>
 
-  <script src="app.js?v=32"></script>
+  <div id="body-check-overlay" class="body-check-overlay hidden" aria-hidden="true">
+    <section id="body-check-dialog" class="body-check-dialog" role="dialog" aria-modal="true" aria-labelledby="body-check-title">
+      <p class="sheet-eyebrow" data-i18n="bodyCheckEyebrow">BODY CHECK</p>
+      <h2 id="body-check-title" data-i18n="bodyCheckTitle">身体をひとつ確認しましょう</h2>
+      <p id="body-check-instruction" class="body-check-instruction"></p>
+      <p id="body-check-question" class="body-check-question"></p>
+      <div id="body-check-answers" class="body-check-answers"></div>
+      <button id="body-check-skip" class="body-check-skip" type="button" data-i18n="skipThisTime">今回は記録しない</button>
+    </section>
+  </div>
+
+  <script src="app.js?v=33"></script>
 </body>
 </html>

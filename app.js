@@ -12,6 +12,7 @@
 
   const SETTINGS_STORAGE_KEY = "tension-check-timer-settings-v1";
   const TIMER_STORAGE_KEY = "tension-check-timer-state-v1";
+  const BODY_CHECK_STORAGE_KEY = "tension-check-timer-body-check-history-v1";
 
   const translations = {
     ja: {
@@ -61,6 +62,22 @@
       languageEyebrow: "LANGUAGE",
       displayLanguage: "表示言語",
       languageNote: "選択した言語は次回も保持されます。",
+      historyEyebrow: "BODY CHECK DATA",
+      historyTitle: "身体チェックの記録",
+      historyCount: n => `保存済み：${n}件`,
+      exportCsv: "CSVでエクスポート",
+      exportJson: "JSONでエクスポート",
+      deleteHistory: "記録を削除",
+      historyNote: "記録はこの端末内にのみ保存されます。",
+      noHistory: "エクスポートできる記録がまだありません。",
+      deleteConfirm: "保存されている身体チェックの記録をすべて削除します。元に戻せません。本当に削除しますか？",
+      deleteComplete: "身体チェックの記録を削除しました。",
+      bodyCheckEyebrow: "BODY CHECK",
+      bodyCheckTitle: "身体をひとつ確認しましょう",
+      skipThisTime: "今回は記録しない",
+      answerBetter: "少し楽になった",
+      answerNoChange: "変わらなかった",
+      answerUnsure: "よく分からない",
       phaseFocus: "集中時間",
       phaseFocusPaused: "集中時間・一時停止中",
       phaseBreak: "休憩時間",
@@ -139,6 +156,22 @@
       languageEyebrow: "LANGUAGE",
       displayLanguage: "Display Language",
       languageNote: "Your language choice will be saved for next time.",
+      historyEyebrow: "BODY CHECK DATA",
+      historyTitle: "Body Check Records",
+      historyCount: n => `Saved: ${n}`,
+      exportCsv: "Export as CSV",
+      exportJson: "Export as JSON",
+      deleteHistory: "Delete Records",
+      historyNote: "Records are stored only on this device.",
+      noHistory: "There are no records to export yet.",
+      deleteConfirm: "Delete all saved body-check records? This action cannot be undone.",
+      deleteComplete: "Body-check records were deleted.",
+      bodyCheckEyebrow: "BODY CHECK",
+      bodyCheckTitle: "Check one area of your body",
+      skipThisTime: "Do not record this time",
+      answerBetter: "It feels a little easier",
+      answerNoChange: "No change",
+      answerUnsure: "Not sure",
       phaseFocus: "Focus Time",
       phaseFocusPaused: "Focus Time · Paused",
       phaseBreak: "Break Time",
@@ -191,6 +224,16 @@
   const themeSheetClose = document.getElementById("theme-sheet-close");
   const themeOptions = [...document.querySelectorAll(".theme-option")];
   const languageOptions = [...document.querySelectorAll(".language-option")];
+  const historyCount = document.getElementById("history-count");
+  const exportCsvButton = document.getElementById("export-csv-button");
+  const exportJsonButton = document.getElementById("export-json-button");
+  const deleteHistoryButton = document.getElementById("delete-history-button");
+  const bodyCheckOverlay = document.getElementById("body-check-overlay");
+  const bodyCheckDialog = document.getElementById("body-check-dialog");
+  const bodyCheckInstruction = document.getElementById("body-check-instruction");
+  const bodyCheckQuestion = document.getElementById("body-check-question");
+  const bodyCheckAnswers = document.getElementById("body-check-answers");
+  const bodyCheckSkip = document.getElementById("body-check-skip");
 
   const decreaseButton = document.getElementById("decrease-button");
   const increaseButton = document.getElementById("increase-button");
@@ -227,6 +270,9 @@
   let alertNextPhase = "break";
   let selectedTheme = "powder-sky";
   let selectedLanguage = "ja";
+  let pendingBodyCheck = null;
+  let pendingBodyCheckStartedAt = null;
+  let continueAfterBodyCheck = null;
 
   let audioContext = null;
   let focusAudio = null;
@@ -238,6 +284,285 @@
   let messageIntervalId = null;
   let shiftIntervalId = null;
   let shiftIndex = 0;
+
+  const BODY_CHECK_QUESTIONS = [
+    {
+      id: "shoulders_release",
+      bodyArea: "shoulders",
+      ja: {
+        instruction: "息を吐きながら、肩をすとんと落としてみましょう。",
+        question: "肩の位置や重さに変化はありましたか？"
+      },
+      en: {
+        instruction: "Breathe out and gently let your shoulders drop.",
+        question: "Did their position or heaviness change?"
+      }
+    },
+    {
+      id: "jaw_release",
+      bodyArea: "jaw",
+      ja: {
+        instruction: "上下の歯を少し離して、舌と顎をゆるめてみましょう。",
+        question: "顎や口の周りに変化はありましたか？"
+      },
+      en: {
+        instruction: "Separate your teeth slightly and relax your tongue and jaw.",
+        question: "Did anything change around your jaw or mouth?"
+      }
+    },
+    {
+      id: "hands_release",
+      bodyArea: "hands",
+      ja: {
+        instruction: "手を机やスマホから離し、指をゆっくり開いてみましょう。",
+        question: "手や指が少し楽になりましたか？"
+      },
+      en: {
+        instruction: "Move your hands away from the desk or phone and slowly open your fingers.",
+        question: "Do your hands or fingers feel any easier?"
+      }
+    },
+    {
+      id: "breathing_release",
+      bodyArea: "breathing",
+      ja: {
+        instruction: "一度だけ、無理のない範囲でゆっくり長く息を吐いてみましょう。",
+        question: "呼吸のしやすさに変化はありましたか？"
+      },
+      en: {
+        instruction: "Take one slow, comfortable breath out.",
+        question: "Did breathing feel any different?"
+      }
+    },
+    {
+      id: "eyes_release",
+      bodyArea: "eyes",
+      ja: {
+        instruction: "画面から視線を外し、目と眉間をゆるめてみましょう。",
+        question: "目の周りが少し楽になりましたか？"
+      },
+      en: {
+        instruction: "Look away from the screen and soften your eyes and brow.",
+        question: "Does the area around your eyes feel any easier?"
+      }
+    },
+    {
+      id: "posture_release",
+      bodyArea: "posture",
+      ja: {
+        instruction: "背もたれや椅子に体重を少し預けてみましょう。",
+        question: "姿勢や体の重さに変化はありましたか？"
+      },
+      en: {
+        instruction: "Let the chair or backrest support a little more of your weight.",
+        question: "Did your posture or sense of weight change?"
+      }
+    },
+    {
+      id: "legs_release",
+      bodyArea: "legs",
+      ja: {
+        instruction: "足裏を床につけ、脚の踏ん張りを少しゆるめてみましょう。",
+        question: "脚や足裏に変化はありましたか？"
+      },
+      en: {
+        instruction: "Place your feet on the floor and ease any bracing in your legs.",
+        question: "Did anything change in your legs or feet?"
+      }
+    }
+  ];
+
+  const BODY_CHECK_ANSWERS = [
+    { id: "felt_better", translationKey: "answerBetter" },
+    { id: "no_change", translationKey: "answerNoChange" },
+    { id: "unsure", translationKey: "answerUnsure" }
+  ];
+
+  function getBodyCheckHistory() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(BODY_CHECK_STORAGE_KEY) || "[]");
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  function saveBodyCheckHistory(records) {
+    localStorage.setItem(BODY_CHECK_STORAGE_KEY, JSON.stringify(records));
+    updateHistoryCount();
+  }
+
+  function updateHistoryCount() {
+    historyCount.textContent = t("historyCount")(getBodyCheckHistory().length);
+  }
+
+  function toLocalIsoString(date = new Date()) {
+    const offsetMinutes = -date.getTimezoneOffset();
+    const sign = offsetMinutes >= 0 ? "+" : "-";
+    const absOffset = Math.abs(offsetMinutes);
+    const hours = String(Math.floor(absOffset / 60)).padStart(2, "0");
+    const minutes = String(absOffset % 60).padStart(2, "0");
+    const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+      .toISOString()
+      .slice(0, -1);
+    return `${local}${sign}${hours}:${minutes}`;
+  }
+
+  function getFocusSoundLabel(soundId, language = selectedLanguage) {
+    const labels = {
+      "gentle-rain-file": { ja: "やさしい雨", en: "Gentle Rain" },
+      "cafe-file": { ja: "カフェの環境音", en: "Café Ambience" }
+    };
+    return labels[soundId]?.[language] ?? soundId;
+  }
+
+  function closeBodyCheck() {
+    bodyCheckOverlay.classList.add("hidden");
+    bodyCheckOverlay.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("body-check-open");
+    pendingBodyCheck = null;
+    pendingBodyCheckStartedAt = null;
+
+    const continuation = continueAfterBodyCheck;
+    continueAfterBodyCheck = null;
+    if (typeof continuation === "function") {
+      continuation();
+    }
+  }
+
+  function recordBodyCheck(answer) {
+    if (!pendingBodyCheck) {
+      return;
+    }
+
+    const localizedQuestion = pendingBodyCheck[selectedLanguage];
+    const record = {
+      recordVersion: 1,
+      answeredAt: toLocalIsoString(),
+      questionId: pendingBodyCheck.id,
+      question: localizedQuestion.question,
+      bodyArea: pendingBodyCheck.bodyArea,
+      answerId: answer.id,
+      answer: t(answer.translationKey),
+      soundId: focusSoundSelect.value,
+      sound: getFocusSoundLabel(focusSoundSelect.value),
+      focusDurationMinutes: Math.round(focusSeconds / 60),
+      actualFocusSeconds: focusSeconds,
+      cycleNumber: cycle,
+      checkTiming: "focus_end",
+      language: selectedLanguage
+    };
+
+    const records = getBodyCheckHistory();
+    records.push(record);
+    saveBodyCheckHistory(records);
+    closeBodyCheck();
+  }
+
+  function showBodyCheck(onComplete) {
+    const randomIndex = Math.floor(Math.random() * BODY_CHECK_QUESTIONS.length);
+    pendingBodyCheck = BODY_CHECK_QUESTIONS[randomIndex];
+    pendingBodyCheckStartedAt = Date.now();
+    continueAfterBodyCheck = onComplete;
+
+    const localizedQuestion = pendingBodyCheck[selectedLanguage];
+    bodyCheckInstruction.textContent = localizedQuestion.instruction;
+    bodyCheckQuestion.textContent = localizedQuestion.question;
+    bodyCheckAnswers.innerHTML = "";
+
+    for (const answer of BODY_CHECK_ANSWERS) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "body-check-answer";
+      button.textContent = t(answer.translationKey);
+      button.addEventListener("click", () => recordBodyCheck(answer), { once: true });
+      bodyCheckAnswers.appendChild(button);
+    }
+
+    bodyCheckOverlay.classList.remove("hidden");
+    bodyCheckOverlay.setAttribute("aria-hidden", "false");
+    document.body.classList.add("body-check-open");
+    bodyCheckAnswers.querySelector("button")?.focus();
+  }
+
+  function csvEscape(value) {
+    const text = String(value ?? "");
+    return `"${text.replaceAll('"', '""')}"`;
+  }
+
+  function downloadFile(filename, content, mimeType) {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  function exportBodyCheckJson() {
+    const records = getBodyCheckHistory();
+    if (records.length === 0) {
+      window.alert(t("noHistory"));
+      return;
+    }
+
+    const date = new Date().toISOString().slice(0, 10);
+    downloadFile(
+      `tension-check-history-${date}.json`,
+      JSON.stringify(records, null, 2),
+      "application/json;charset=utf-8"
+    );
+  }
+
+  function exportBodyCheckCsv() {
+    const records = getBodyCheckHistory();
+    if (records.length === 0) {
+      window.alert(t("noHistory"));
+      return;
+    }
+
+    const columns = [
+      "recordVersion",
+      "answeredAt",
+      "questionId",
+      "question",
+      "bodyArea",
+      "answerId",
+      "answer",
+      "soundId",
+      "sound",
+      "focusDurationMinutes",
+      "actualFocusSeconds",
+      "cycleNumber",
+      "checkTiming",
+      "language"
+    ];
+
+    const rows = [
+      columns.join(","),
+      ...records.map(record => columns.map(column => csvEscape(record[column])).join(","))
+    ];
+
+    const date = new Date().toISOString().slice(0, 10);
+    downloadFile(
+      `tension-check-history-${date}.csv`,
+      `\uFEFF${rows.join("\r\n")}`,
+      "text/csv;charset=utf-8"
+    );
+  }
+
+  function deleteBodyCheckHistory() {
+    if (!window.confirm(t("deleteConfirm"))) {
+      return;
+    }
+
+    localStorage.removeItem(BODY_CHECK_STORAGE_KEY);
+    updateHistoryCount();
+    window.alert(t("deleteComplete"));
+  }
 
   function clearDimModeTimer() {
     if (dimModeTimeoutId !== null) {
@@ -764,6 +1089,8 @@
       previewFocusButton.textContent = t("stopPreview");
     }
 
+    updateHistoryCount();
+
     if (shouldRefreshDisplay) {
       updateDisplay();
       updateWakeLockStatus(currentWakeLockStatusKey);
@@ -1115,8 +1442,10 @@
       alertTimeoutId = null;
 
       if (alertNextPhase === "break") {
-        phase = "break";
-        beginCountdown(BREAK_SECONDS);
+        showBodyCheck(() => {
+          phase = "break";
+          beginCountdown(BREAK_SECONDS);
+        });
         return;
       }
 
@@ -1200,6 +1529,11 @@
     showSetupScreen();
     updateDisplay();
   }
+
+  exportCsvButton.addEventListener("click", exportBodyCheckCsv);
+  exportJsonButton.addEventListener("click", exportBodyCheckJson);
+  deleteHistoryButton.addEventListener("click", deleteBodyCheckHistory);
+  bodyCheckSkip.addEventListener("click", closeBodyCheck);
 
   decreaseButton.addEventListener("click", () => {
     setFocusMinutes(clampFocusMinutes(focusMinutesInput.value) - 1);
@@ -1297,6 +1631,7 @@
 
   updateWakeLockStatus("wakeUnused");
   loadSettings();
+  updateHistoryCount();
   applyLanguage(selectedLanguage, false);
 
   focusSeconds = clampFocusMinutes(focusMinutesInput.value) * 60;
